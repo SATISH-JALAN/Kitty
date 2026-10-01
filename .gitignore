@@ -63,14 +63,16 @@ Desktop.ini
 
 # ---------------------------------------------------------------
 # Fonts: the ITF Free Font License forbids redistribution.
-# Fetched at install by `pnpm fonts` (scripts/fetch-fonts.mjs).
+# Fetched at install by `pnpm fonts` (frontend/scripts/fetch-fonts.mjs).
 # ---------------------------------------------------------------
-packages/ui/fonts/Boska-*.woff2
-packages/ui/fonts/Switzer-*.woff2
+frontend/packages/ui/fonts/Boska-*.woff2
+frontend/packages/ui/fonts/Switzer-*.woff2
 
 # ---------------------------------------------------------------
 # Project docs and reference material (kept local only)
 # ---------------------------------------------------------------
-docs/
+/docs/
 # Screenshots, frame sheets and walkthrough videos from the review loop
-review/
+/frontend/review/
+# Raw painted art (65 MB). pnpm art turns it into apps/web/public/art, which is committed
+/frontend/kitty visuals/
