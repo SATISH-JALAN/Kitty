@@ -1,0 +1,76 @@
+# ---------------------------------------------------------------
+# Dependencies
+# ---------------------------------------------------------------
+node_modules/
+.pnpm-store/
+
+# ---------------------------------------------------------------
+# Build output and caches
+# ---------------------------------------------------------------
+.next/
+out/
+dist/
+build/
+.turbo/
+.open-next/
+.vercel/
+.wrangler/
+*.tsbuildinfo
+next-env.d.ts
+
+# ---------------------------------------------------------------
+# Tests and coverage
+# ---------------------------------------------------------------
+coverage/
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+
+# ---------------------------------------------------------------
+# Environment and secrets (commit a .env.example instead)
+# ---------------------------------------------------------------
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+# Solana keypairs (anchor / solana-keygen output)
+*-keypair.json
+id.json
+
+# ---------------------------------------------------------------
+# Logs
+# ---------------------------------------------------------------
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ---------------------------------------------------------------
+# OS and editor files
+# ---------------------------------------------------------------
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.swp
+*~
+.vscode/
+.idea/
+# Claude Code local settings (shared settings.json can still be committed)
+.claude/settings.local.json
+
+# ---------------------------------------------------------------
+# Fonts: the ITF Free Font License forbids redistribution.
+# Fetched at install by `pnpm fonts` (scripts/fetch-fonts.mjs).
+# ---------------------------------------------------------------
+packages/ui/fonts/Boska-*.woff2
+packages/ui/fonts/Switzer-*.woff2
+
+# ---------------------------------------------------------------
+# Project docs and reference material (kept local only)
+# ---------------------------------------------------------------
+docs/
+# Screenshots, frame sheets and walkthrough videos from the review loop
+review/

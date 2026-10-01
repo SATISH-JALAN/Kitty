@@ -1,0 +1,26 @@
+{
+  "name": "kitty",
+  "private": true,
+  "packageManager": "pnpm@10.34.5",
+  "scripts": {
+    "dev": "turbo run dev --filter=@kitty/web",
+    "build": "turbo run build",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "fonts": "node scripts/fetch-fonts.mjs",
+    "art": "node scripts/art-pipeline.mjs",
+    "grain": "node scripts/make-grain.mjs",
+    "contrast": "node scripts/contrast.mjs",
+    "brand": "tsx scripts/brand.ts",
+    "postinstall": "node scripts/fetch-fonts.mjs",
+    "lint:copy": "node scripts/copy-lint.mjs",
+    "check": "node scripts/contrast.mjs && node scripts/copy-lint.mjs && turbo run typecheck test"
+  },
+  "devDependencies": {
+    "fontkit": "^2.0.4",
+    "sharp": "^0.35.5",
+    "tsx": "^4.23.15",
+    "turbo": "^2.11.5",
+    "typescript": "5.9.3"
+  }
+}
