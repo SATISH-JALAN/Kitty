@@ -8,7 +8,7 @@ await p.goto("http://localhost:3100/pass", { waitUntil: "networkidle" });
 await p.fill('input[type="email"]', "guest@kitty.test");
 await p.click('button[type="submit"]');
 await p.waitForTimeout(600);
-await p.setInputFiles('input[type="file"]', "../../docs/ref/logo-concept.png");
+await p.setInputFiles('input[type="file"]', "../../../docs/ref/logo-concept.png");
 await p.waitForTimeout(1600);
 await p.screenshot({ path: `${out}/pass-qr.png` });
 await p.getByRole("button", { name: "Make my pass" }).click();

@@ -148,7 +148,7 @@ await page.fill('input[type="email"]', "guest@kitty.test");
 await wait(400);
 await page.click('button[type="submit"]');
 await wait(1200);
-await page.setInputFiles('input[type="file"]', path.resolve(import.meta.dirname, "../../../docs/ref/logo-concept.png"));
+await page.setInputFiles('input[type="file"]', path.resolve(import.meta.dirname, "../../../../docs/ref/logo-concept.png"));
 await wait(2200);
 await page.getByRole("button", { name: "Make my pass" }).click();
 await wait(15000);
