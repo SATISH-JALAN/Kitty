@@ -2,7 +2,7 @@
 /**
  * Art pipeline (brief 16, 16.1).
  *
- * Reads the painted art from ART_SRC (default: ~/Downloads/kitty visuals), fixes what
+ * Reads the painted art from ART_SRC (default: frontend/kitty visuals), fixes what
  * the generator couldn't deliver, and writes web-ready files to apps/web/public/art:
  *
  * - H-2 arrives with a painted checkerboard instead of transparency → keyed out.
@@ -15,11 +15,10 @@
  */
 import sharp from "sharp";
 import { mkdir, writeFile, access } from "node:fs/promises";
-import { homedir } from "node:os";
 import path from "node:path";
 
 const ROOT = path.resolve(import.meta.dirname, "..");
-const SRC = process.env.ART_SRC ?? path.join(homedir(), "Downloads", "kitty visuals");
+const SRC = process.env.ART_SRC ?? path.join(ROOT, "kitty visuals");
 const OUT = path.join(ROOT, "apps/web/public/art");
 const MANIFEST = path.join(ROOT, "apps/web/art/manifest.generated.json");
 

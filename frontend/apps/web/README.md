@@ -12,14 +12,14 @@ pnpm art              # once: keys, splits and encodes the painted art into publ
 pnpm dev              # http://localhost:3100
 ```
 
-`pnpm art` reads the source PNGs from `~/Downloads/kitty visuals` (set `ART_SRC` to change it). If a file is missing, `<Art>` renders a placeholder at the final size.
+`pnpm art` reads the source PNGs from `frontend/kitty visuals` (set `ART_SRC` to change it). If a file is missing, `<Art>` renders a placeholder at the final size.
 
 ## Checks
 
 | Command | What it checks |
 | --- | --- |
 | `pnpm check` | Contrast (AA on every text pair), copy compliance (banned words, brief 0.4), typecheck, SDK tests (Act 4 numbers) |
-| `node apps/web/scripts/shot.mjs <route> [--steps …] [--reduced] [--nojs]` | Screenshots and scroll captures for the review loop (brief 17.3) → `review/` |
+| `node apps/web/scripts/shot.mjs <route> [--steps …] [--reduced] [--nojs]` | Screenshots and scroll captures for the review loop (brief 17.3) → `frontend/review/` |
 | `node apps/web/scripts/overlap.mjs [--landing]` | Colliding text and controls at 1440 and 390 |
 | `pnpm brand` | Regenerates the logo files in `public/brand` from the Bow Mask geometry |
 

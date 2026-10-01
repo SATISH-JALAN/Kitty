@@ -1,6 +1,7 @@
 import sharp from "sharp";
+import path from "node:path";
 // Find bounding boxes of alpha regions / bright regions to anchor overlays.
-const V = "C:/Users/satish/Downloads/kitty visuals/";
+const V = path.resolve(import.meta.dirname, "../kitty visuals") + "/";
 async function alphaBox(f) {
   const { data, info } = await sharp(V + f).raw().toBuffer({ resolveWithObject: true });
   let x0 = 1e9, y0 = 1e9, x1 = -1, y1 = -1;
