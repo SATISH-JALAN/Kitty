@@ -1,0 +1,272 @@
+/* Component styles that need pseudo-elements or world-aware variables (brief 7). */
+
+/* ---------------------------------- Button (7.1) ---------------------------------- */
+:root,
+[data-world="paper"] {
+  --primary-fill: var(--plum);
+  --primary-fill-fg: var(--paper);
+  --money-fill: #08554e;
+  --ghost-fill: var(--ink);
+  --ghost-fill-fg: var(--paper);
+}
+[data-world="night"] {
+  --primary-fill: var(--lantern);
+  --primary-fill-fg: var(--night);
+  --money-fill: #7bd8cb;
+  --ghost-fill: var(--moon);
+  --ghost-fill-fg: var(--night);
+}
+
+.btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 96px;
+  border-radius: var(--radius-cut);
+  font-family: var(--font-sans);
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  isolation: isolate;
+  overflow: hidden;
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  box-shadow: var(--d1);
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.btn[data-size="S"] {
+  min-height: 36px;
+}
+/* Invisible hit-area extension: every target is at least 44×44 (brief 7). */
+.btn[data-size="S"]::before {
+  content: "";
+  position: absolute;
+  inset: -4px 0;
+}
+.btn-label {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.btn-fill {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-inline: inherit;
+  background: var(--btn-fill);
+  color: var(--btn-fill-fg);
+  clip-path: circle(0% at 50% 50%);
+  pointer-events: none;
+}
+.btn-busy {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  color: var(--btn-fg);
+  background: var(--btn-bg);
+}
+.btn-primary {
+  --btn-bg: var(--primary);
+  --btn-fg: var(--on-primary);
+  --btn-fill: var(--primary-fill);
+  --btn-fill-fg: var(--primary-fill-fg);
+}
+.btn-money {
+  --btn-bg: var(--money);
+  --btn-fg: var(--on-money);
+  --btn-fill: var(--money-fill);
+  --btn-fill-fg: var(--on-money);
+}
+/* The stitched inner border: a ticket you can trust. */
+.btn-money::after {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  z-index: 4;
+  border: 1px dashed color-mix(in srgb, var(--on-money) 35%, transparent);
+  border-radius: 1px;
+  pointer-events: none;
+}
+.btn-ghost {
+  --btn-bg: transparent;
+  --btn-fg: var(--fg);
+  --btn-fill: var(--ghost-fill);
+  --btn-fill-fg: var(--ghost-fill-fg);
+  box-shadow: inset 0 0 0 1px var(--hairline);
+}
+.btn-block {
+  width: 100%;
+}
+.btn[aria-disabled="true"]:not([aria-busy="true"]) {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.btn[aria-busy="true"] {
+  cursor: progress;
+}
+
+/* ---------------------------------- Text link ---------------------------------- */
+.text-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  color: var(--fg);
+}
+.tl-base,
+.tl-stitch {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -5px;
+  height: 1px;
+  background-image: linear-gradient(to right, currentColor 57%, transparent 0);
+  background-size: 7px 1px;
+  background-repeat: repeat-x;
+  pointer-events: none;
+}
+.tl-base {
+  opacity: 0.35;
+}
+.tl-stitch {
+  clip-path: inset(0 100% 0 0);
+}
+
+/* ---------------------------------- Focus ring (primitive 20) ---------------------------------- */
+html[data-focus-ring="on"] :focus-visible {
+  outline: none;
+}
+.focus-ring {
+  position: fixed;
+  z-index: var(--z-cursor);
+  pointer-events: none;
+  overflow: visible;
+  color: var(--focus);
+}
+
+/* ---------------------------------- Paper blocks ---------------------------------- */
+.paper-card {
+  position: relative;
+  background: var(--bg-raised);
+  border-radius: var(--radius-cut);
+  box-shadow: var(--d1);
+}
+.fold-lines {
+  /* Loading: blank paper with faint fold lines, at the final size (brief 10.5). */
+  background:
+    linear-gradient(to right, transparent calc(50% - 0.5px), rgba(34, 21, 31, 0.06) 50%, transparent calc(50% + 0.5px)),
+    linear-gradient(to bottom, transparent calc(50% - 0.5px), rgba(34, 21, 31, 0.05) 50%, transparent calc(50% + 0.5px)),
+    var(--bg-raised);
+  border-radius: var(--radius-cut);
+}
+[data-world="night"] .fold-lines {
+  background:
+    linear-gradient(to right, transparent calc(50% - 0.5px), rgba(246, 238, 223, 0.06) 50%, transparent calc(50% + 0.5px)),
+    linear-gradient(to bottom, transparent calc(50% - 0.5px), rgba(246, 238, 223, 0.05) 50%, transparent calc(50% + 0.5px)),
+    var(--bg-raised);
+}
+
+/* Currency sign in money-xl: 0.62em, superscript-aligned (brief 5.4). */
+.money-sign {
+  font-size: 0.62em;
+  vertical-align: 0.32em;
+  margin-right: 0.04em;
+}
+
+/* ---------------------------------- Field (7.5) ---------------------------------- */
+.field-slip {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 52px;
+  padding-inline: 16px;
+  background: var(--paper-deep);
+  border-radius: var(--radius-cut);
+  color: var(--ink);
+  transition:
+    background var(--t-s) var(--ease-paper),
+    box-shadow var(--t-s) var(--ease-paper);
+  transform-origin: 50% 100%;
+}
+.field-slip[data-focused="true"] {
+  background: var(--paper);
+  box-shadow: var(--d1), inset 0 0 0 1px var(--hairline);
+}
+.field-slip input {
+  flex: 1;
+  min-width: 0;
+  height: 52px;
+  background: transparent;
+  border: 0;
+  outline: none;
+  color: inherit;
+}
+.field-slip input::placeholder {
+  color: color-mix(in srgb, var(--ink-soft) 70%, transparent);
+}
+.field-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background-image: linear-gradient(to right, var(--focus) 57%, transparent 0);
+  background-size: 7px 2px;
+  clip-path: inset(0 100% 0 0);
+}
+.field-slip[data-invalid="true"] .field-line {
+  --focus: var(--error);
+  clip-path: inset(0 0 0 0);
+}
+[data-world="night"] .field-slip {
+  --focus: var(--plum);
+}
+
+/* Any world surface re-establishes its own text colour (nested paper on night, and back). */
+[data-world] {
+  color: var(--fg);
+}
+
+/* Ledger slip: a changed line gets an ink underline for 600 ms (brief 7.22). */
+.ledger-flash {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -3px;
+  height: 1.5px;
+  background: var(--fg);
+  opacity: 0;
+  pointer-events: none;
+}
+.ledger-flash.is-on {
+  animation: ledger-flash 840ms var(--ease-ink) both;
+}
+@keyframes ledger-flash {
+  0% {
+    opacity: 1;
+    clip-path: inset(0 100% 0 0);
+  }
+  28% {
+    opacity: 1;
+    clip-path: inset(0 0 0 0);
+  }
+  72% {
+    opacity: 1;
+    clip-path: inset(0 0 0 0);
+  }
+  100% {
+    opacity: 0;
+    clip-path: inset(0 0 0 0);
+  }
+}
