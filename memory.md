@@ -21,7 +21,7 @@ The frontend is **complete for P0, P1 and P2**. The one piece of polish still op
 | App screens: `/pass`, `/invite/[id]`, `/tonight`, `/parties`, `/parties/new`, `/p/[id]`, `/p/[id]/draw`, `/diary`, `/diary/show`, `/house`, `/settings` | ✅ Done, fix pass + polish pass |
 | Mobile tab bar, route transitions, cursor, header world switch | ✅ Done |
 | OG image, favicon, meta, text cylinder | ✅ Done |
-| Share card as image (P2, `/parties/new`) | ✅ Done (`apps/web/lib/shareCard.ts`) |
+| Share card as image (P2, `/parties/new`) | ✅ Done (`frontend/apps/web/lib/shareCard.ts`) |
 | Sound (P2) | ✂️ Cut by owner decision (STORYBOARD C20) |
 | No-JS page | ✅ Every act shows a designed end state |
 | Reduced motion | ✅ Every act has static panels with art |
@@ -69,10 +69,10 @@ When it exists, the frontend swaps are small:
 
 | Swap | Where | How |
 | --- | --- | --- |
-| Indexer API | `apps/web/data/api.ts` | Set `NEXT_PUBLIC_KITTY_API`. Hooks: `useMe`, `useParties`, `useParty`, `useHouse`, `useDraw`, `useChipIn`. The sample layer switches off automatically (`IS_SAMPLE`) |
-| Privy login | `apps/web/data/session.ts` | Set `NEXT_PUBLIC_PRIVY_APP_ID`. Demo email sign-in is the fallback |
-| ZK prover | `apps/web/lib/prover.ts` | Replace `runMock` with the `packages/zk` Web Worker (doesn't exist yet). The event shape stays the same |
-| Invite creation | `apps/web/app/(app)/parties/new/page.tsx` (`create`) | Currently fakes a 2.2 s create and a sample link |
+| Indexer API | `frontend/apps/web/data/api.ts` | Set `NEXT_PUBLIC_KITTY_API`. Hooks: `useMe`, `useParties`, `useParty`, `useHouse`, `useDraw`, `useChipIn`. The sample layer switches off automatically (`IS_SAMPLE`) |
+| Privy login | `frontend/apps/web/data/session.ts` | Set `NEXT_PUBLIC_PRIVY_APP_ID`. Demo email sign-in is the fallback |
+| ZK prover | `frontend/apps/web/lib/prover.ts` | Replace `runMock` with the `frontend/packages/zk` Web Worker (doesn't exist yet). The event shape stays the same |
+| Invite creation | `frontend/apps/web/app/(app)/parties/new/page.tsx` (`create`) | Currently fakes a 2.2 s create and a sample link |
 
 ### 2. Lighthouse mobile performance pass (deferred: do after the backend)
 Targets from brief 15.2: Performance ≥ 80, Accessibility ≥ 95, Best Practices ≥ 95.
@@ -98,24 +98,25 @@ Next steps for the pass:
 
 ### 3. Open questions for others
 - **Art:** re-export H-2…H-5 at 2880 px wide (H-4 especially; the dolly is capped at 8× because it pixelates). No code change needed (STORYBOARD C3).
-- **Product:** is the late fee charged per missed night or once? The UI currently shows Settle up $260.00 = $250 + 5 × $2. It's one constant in `packages/sdk/src/fees.ts` (STORYBOARD C10).
+- **Product:** is the late fee charged per missed night or once? The UI currently shows Settle up $260.00 = $250 + 5 × $2. It's one constant in `frontend/packages/sdk/src/fees.ts` (STORYBOARD C10).
 
 ### 4. Housekeeping
-- The project is **not a git repo** yet. Run `git init` and make a first commit. A snapshot of the source from before the Sep 30 evening changes was saved in the Claude session scratchpad (`kitty-src-before.tgz`); it isn't part of the repo.
+- **Repo layout (Oct 2):** a mini monorepo. `frontend/` holds the pnpm + turborepo workspace (`apps/web`, `packages/ui`, `packages/sdk`, `scripts`); `backend/` and `contracts/` are placeholders. `frontend/review/` (screenshots/videos) and `frontend/kitty visuals/` (raw art for `pnpm art`) are gitignored. `docs/`, `README.md` and this file stay at the root.
 
 ---
 
 ## How to run and verify
 
 ```bash
+cd frontend
 pnpm install          # also fetches Boska/Switzer (licence: not committed)
-pnpm art              # rebuild apps/web/public/art from ~/Downloads/kitty visuals
+pnpm art              # rebuild apps/web/public/art from frontend/kitty visuals
 pnpm dev              # http://localhost:3100
 pnpm check            # contrast + copy lint + typecheck + tests
 cd apps/web && npx next build && npx next start --port 3100
 node scripts/overlap.mjs --landing              # overlap audit (server running)
 node scripts/keyboard.mjs                       # keyboard-only audit, every route
-node scripts/shot.mjs / --steps "0,900,1800"    # screenshots into review/
+node scripts/shot.mjs / --steps "0,900,1800"    # screenshots into frontend/review/
 BASE=http://localhost:3100 node scripts/record.mjs --name desktop   # walkthrough video
 ```
 On Git Bash, prefix commands that take a route (`/pass`, `/p/x`) with `MSYS_NO_PATHCONV=1`.
@@ -123,6 +124,10 @@ On Git Bash, prefix commands that take a route (`/pass`, `/p/x`) with `MSYS_NO_P
 ---
 
 ## Changelog
+
+### Oct 2, 2026, session 6 (repo layout)
+- Rewrote `.gitignore` and split the history into 65 commits.
+- Moved the whole frontend workspace into `frontend/` (history kept via `git mv`). Added `backend/` and `contracts/` placeholders and a root `README.md`. Then moved `review/` and the raw art (`~/Downloads/kitty visuals`) into `frontend/`, both gitignored; `pnpm art` now reads `frontend/kitty visuals` by default. The review scripts read `docs/ref` from the root.
 
 ### Oct 1, 2026, session 5 (fixes from the owner's testing)
 - **Blank hero after scrolling back up:** Act 2 hid Act 1 twice (a scroll callback and a step in its scrubbed timeline); the scrub replayed late and re-hid the hero. Now only the scroll callbacks decide (`Act2Traditions.tsx`).
@@ -135,19 +140,19 @@ On Git Bash, prefix commands that take a route (`/pass`, `/p/x`) with `MSYS_NO_P
 - **Act 4 glowing lines:** removed the House Fund net, its glowing stream and the dashed plus-ones line + label (owner: keep it simple). The waterfall chapter now shows only the short keepsafe stream; the ledger slip carries From plus-ones $0 / From the House Fund $250. The unused `Net` component was deleted from `components/stage/Props.tsx`.
 
 ### Sep 30, 2026, session 4 (size, share card, polish)
-- **Bundle size:** landing 284 → 235 KB (263 KB after the Oct 1 revert), app screens down 10–20 KB each (all under 250). TanStack Query moved to `components/QueryProvider.tsx` (app + ceremony layouts only); Lenis loaded dynamically in `MotionProvider`; Flip and MorphSVG fetched on idle (`packages/ui/src/motion/flip.ts`, `morph.ts`); MotionPath opt-in (`motionPath.ts`, `primitives/chits.ts`); Acts 3–7 + Finale + footer hydrated late via `_acts/LateActs.tsx` (reverted Oct 1, see session 5).
+- **Bundle size:** landing 284 → 235 KB (263 KB after the Oct 1 revert), app screens down 10–20 KB each (all under 250). TanStack Query moved to `components/QueryProvider.tsx` (app + ceremony layouts only); Lenis loaded dynamically in `MotionProvider`; Flip and MorphSVG fetched on idle (`frontend/packages/ui/src/motion/flip.ts`, `morph.ts`); MotionPath opt-in (`motionPath.ts`, `primitives/chits.ts`); Acts 3–7 + Finale + footer hydrated late via `_acts/LateActs.tsx` (reverted Oct 1, see session 5).
 - **Sound:** removed (unused copy string), recorded as STORYBOARD C20.
 - **Share card as image:** `lib/shareCard.ts` + button and note in the wizard's share row.
 - **No JS:** CSS-geometry hero frame, static panels for Acts 2–6 via `<noscript>`, one seal, the finale seal hidden, outlined React boundaries shown in place.
 - **Reduced motion:** Act 3 stamps, Act 5 door/masks/notice, Act 6 booklet + page, finale word fix.
 - **Layout:** wizard guest stepper on phones, sticky invite card (`overflow: clip`), fee lines keep items together, ceremony Devnet tag scrolls on phones.
 - **Lighthouse fixes (not re-measured):** reveal-gated sky and late acts (`lib/reveal.ts`), door priority on `/pass`, SplitText aria, Devnet button label, wizard chip contrast.
-- **Tooling:** added `apps/web/scripts/keyboard.mjs`; removed the dead `review` script from `apps/web/package.json`.
+- **Tooling:** added `frontend/apps/web/scripts/keyboard.mjs`; removed the dead `review` script from `frontend/apps/web/package.json`.
 - **Video:** re-recorded `review/video/kitty-desktop.*` and `kitty-phone.*` on the final build.
 
 ### Sep 30, 2026, session 3 (status check)
 - Audited the build against brief 17.2 / 17.4 and re-ran every check.
-- Fixed the `@kitty/ui` typecheck (`declare const process` in `packages/ui/src/motion/gsap.ts`).
+- Fixed the `@kitty/ui` typecheck (`declare const process` in `frontend/packages/ui/src/motion/gsap.ts`).
 - Created this file.
 
 ### Sep 30, 2026, session 2 (fix pass)
