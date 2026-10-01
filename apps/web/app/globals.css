@@ -1,0 +1,303 @@
+@import "tailwindcss";
+@import "@kitty/ui/tokens.css";
+@import "@kitty/ui/components.css";
+
+@source "../../../packages/ui/src";
+
+@layer base {
+  html {
+    background: var(--bg);
+    color: var(--fg);
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.55;
+    min-height: 100svh;
+    hanging-punctuation: first last;
+  }
+  /* Boska's default oldstyle 1 reads as an I; lining figures everywhere in display type. */
+  :where([class*="type-display"], [class*="type-h1"], [class*="type-h2"], .type-word, h1, h2) {
+    font-variant-numeric: lining-nums;
+  }
+  @media (min-width: 1024px) {
+    body {
+      font-size: 17px;
+    }
+  }
+  ::selection {
+    background: var(--marigold);
+    color: var(--night);
+  }
+  :where(a) {
+    color: inherit;
+    text-decoration: none;
+  }
+  :where(button) {
+    font: inherit;
+    color: inherit;
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+  }
+  :where(img, svg, video, canvas) {
+    display: block;
+  }
+  /* The stitched focus ring (primitive 20) draws on :focus-visible; this is the static fallback. */
+  :where(:focus-visible) {
+    outline: 1px dashed var(--focus);
+    outline-offset: 4px;
+  }
+  :where([data-focus-ring]:focus-visible) {
+    outline: none;
+  }
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+  .lenis.lenis-stopped {
+    overflow: clip;
+  }
+  /* Custom cursor hides the native one only once mounted (brief 10.3). */
+  html[data-cursor="on"],
+  html[data-cursor="on"] * {
+    cursor: none !important;
+  }
+}
+
+/* Skip link (15.3). */
+.skip-link {
+  position: fixed;
+  left: 16px;
+  top: 12px;
+  z-index: var(--z-preloader);
+  transform: translateY(-160%);
+  background: var(--primary);
+  color: var(--on-primary);
+  padding: 10px 16px;
+  border-radius: var(--radius-cut);
+  font-weight: 500;
+  font-size: 15px;
+}
+.skip-link:focus-visible {
+  transform: none;
+}
+
+/* JS-off and reduced-motion: every act shows its end state (8.6, 15.3). */
+html:not(.js) [data-motion-init],
+html[data-reduced] [data-motion-init] {
+  opacity: 1 !important;
+  transform: none !important;
+  clip-path: none !important;
+  visibility: visible !important;
+}
+
+/* Grain follows the world under the header line (set by the world watcher). */
+.kitty-grain {
+  opacity: 0.06;
+  mix-blend-mode: multiply;
+}
+html[data-page-world="night"] .kitty-grain {
+  opacity: 0.05;
+  mix-blend-mode: screen;
+}
+
+/* Header (brief 10.1) */
+.site-header {
+  height: 60px;
+}
+@media (min-width: 1024px) {
+  .site-header {
+    height: 72px;
+  }
+}
+.header-bg {
+  transition:
+    background-color var(--t-m) var(--ease-paper),
+    box-shadow var(--t-m) var(--ease-paper);
+}
+.site-header[data-solid="true"] .header-bg {
+  background: color-mix(in srgb, var(--bg) 92%, transparent);
+  box-shadow: inset 0 -1px 0 var(--hairline);
+}
+.devnet-tag--floating {
+  left: 20px;
+  bottom: calc(10px + env(safe-area-inset-bottom));
+  transition: opacity var(--t-m) ease, visibility 0s;
+}
+/* Desktop landing: the header carries its own Devnet tag, so the floating one only shows
+   while the header is tucked away. Exactly one label is visible, and the hero CTAs stay clear. */
+@media (min-width: 1024px) {
+  body:has(.site-header[data-hidden="false"]) .devnet-tag--floating {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity var(--t-m) ease, visibility 0s linear var(--t-m);
+  }
+}
+.devnet-tag--top {
+  left: calc(var(--margin) - 4px);
+  top: 10px;
+}
+/* Phones/tablets: ceremony content runs edge to edge, so the tag stays at the top of the
+   page and scrolls away with it rather than floating over form labels. */
+@media (max-width: 1023px) {
+  .devnet-tag--top {
+    position: absolute !important;
+  }
+}
+.devnet-tag--inline {
+  display: inline-flex;
+}
+.devnet-short {
+  display: none;
+}
+@media (max-width: 479px) {
+  .devnet-tag--inline .devnet-long,
+  .devnet-tag--top .devnet-long {
+    display: none;
+  }
+  .devnet-tag--inline .devnet-short,
+  .devnet-tag--top .devnet-short {
+    display: inline;
+  }
+}
+
+/* Cursor (brief 10.3) */
+.k-cursor-dot,
+.k-cursor-ring {
+  display: none;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: var(--z-cursor);
+  pointer-events: none;
+  translate: -50% -50%;
+  border-radius: 50%;
+}
+.k-cursor-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--ink);
+  transition:
+    opacity var(--t-xs),
+    width var(--t-s) var(--ease-paper),
+    height var(--t-s) var(--ease-paper),
+    border-radius var(--t-s);
+}
+.k-cursor-dot[data-world="night"] {
+  background: var(--moon);
+}
+.k-cursor-dot[data-mode="link"],
+.k-cursor-dot[data-mode="media"],
+.k-cursor-dot[data-mode="drag"] {
+  opacity: 0 !important;
+}
+.k-cursor-dot[data-mode="text"] {
+  width: 2px;
+  height: 18px;
+  border-radius: 1px;
+}
+.k-cursor-dot[data-mode="disabled"] {
+  opacity: 0.4 !important;
+}
+.k-cursor-ring {
+  width: 28px;
+  height: 28px;
+  border: 1px solid color-mix(in srgb, var(--ink) 55%, transparent);
+  display: none;
+  place-items: center;
+}
+.k-cursor-ring[data-world="night"] {
+  border-color: color-mix(in srgb, var(--moon) 55%, transparent);
+}
+.k-cursor-ring[data-mode="link"],
+.k-cursor-ring[data-mode="disabled"] {
+  border-style: dashed;
+}
+.k-cursor-ring[data-mode="media"] {
+  border-color: var(--lantern);
+  box-shadow: 0 0 0 1px rgba(7, 3, 12, 0.25);
+}
+.k-cursor-ring[data-mode="text"] {
+  opacity: 0 !important;
+}
+.k-cursor-label {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.k-cursor-ring[data-world="night"] .k-cursor-label {
+  color: var(--moon);
+}
+.k-cursor-ring[data-mode="media"] .k-cursor-label {
+  align-items: end;
+  padding-bottom: 12px;
+}
+
+/* Act 0 · Preloader */
+.preloader {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-preloader);
+  pointer-events: none;
+}
+html[data-preload] .preloader {
+  display: block;
+  pointer-events: auto;
+}
+.pl-veil {
+  position: absolute;
+  inset: 0;
+  background: var(--night);
+}
+html[data-preload="return"] .pl-string,
+html[data-preload="return"] .pl-hanger,
+html[data-preload="return"] .pl-chrome {
+  display: none;
+}
+.pl-string {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.pl-hanger {
+  visibility: hidden;
+  position: absolute;
+  translate: -50% 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.pl-wordmark {
+  position: absolute;
+  left: var(--margin);
+  bottom: 32px;
+}
+.pl-counter {
+  position: absolute;
+  right: var(--margin);
+  bottom: 32px;
+  font-size: 14px;
+  color: var(--moon-soft);
+  display: inline-flex;
+  gap: 0.4em;
+  align-items: center;
+}

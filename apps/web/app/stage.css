@@ -1,0 +1,256 @@
+/* Stage objects shared by the landing page and the app. */
+
+/* Booklet (Party Diary) */
+.booklet {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  aspect-ratio: 800 / 560;
+  width: min(800px, 100%);
+  perspective: 2200px;
+  filter: drop-shadow(0 14px 28px rgba(34, 21, 31, 0.28));
+}
+.booklet.is-single {
+  grid-template-columns: 1fr;
+  aspect-ratio: 400 / 552;
+  width: min(420px, 88vw);
+}
+.booklet-side {
+  position: relative;
+  overflow: hidden;
+}
+.booklet-left {
+  border-radius: 3px 0 0 3px;
+}
+.booklet-right {
+  border-radius: 0 3px 3px 0;
+}
+.booklet-left .diary-page {
+  box-shadow: inset -18px 0 22px -18px rgba(34, 21, 31, 0.35);
+}
+.booklet-right .diary-page {
+  box-shadow: inset 18px 0 22px -18px rgba(34, 21, 31, 0.35);
+}
+.booklet-shade {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgba(34, 21, 31, 0.45), rgba(34, 21, 31, 0) 60%);
+}
+.booklet-leaf {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  transform-style: preserve-3d;
+  z-index: 3;
+}
+.leaf-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  overflow: hidden;
+}
+.leaf-back {
+  transform: rotateY(180deg);
+}
+.diary-page {
+  position: relative;
+  height: 100%;
+  background: var(--paper);
+  color: var(--ink);
+}
+.diary-page-frame {
+  position: absolute;
+  inset: 14px;
+  border: 1px solid var(--gold);
+  outline: 1px solid var(--gold);
+  outline-offset: -5px;
+  pointer-events: none;
+  opacity: 0.8;
+}
+.diary-page[data-perf="left"]::after,
+.diary-page[data-perf="right"]::after {
+  content: "";
+  position: absolute;
+  top: 10px;
+  bottom: 10px;
+  width: 2px;
+  background: radial-gradient(circle, rgba(34, 21, 31, 0.28) 1px, transparent 1.5px) 0 0 / 2px 8px repeat-y;
+}
+.diary-page[data-perf="left"]::after {
+  left: 6px;
+}
+.diary-page[data-perf="right"]::after {
+  right: 6px;
+}
+.diary-page-body {
+  position: absolute;
+  inset: 28px 30px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.diary-page-n {
+  position: absolute;
+  left: 50%;
+  bottom: 14px;
+  translate: -50% 0;
+  font-size: 11px;
+  color: var(--ink-soft);
+}
+.booklet-cover {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 3px 6px 6px 3px;
+  overflow: hidden;
+  box-shadow: inset 6px 0 10px -6px rgba(0, 0, 0, 0.5);
+}
+.booklet-cover-foil {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+.booklet-cover-title {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
+  font-size: clamp(22px, 2.4vw, 34px);
+  color: #d9b561;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
+  letter-spacing: 0.01em;
+}
+
+/* Bunting chart tag */
+.chart-tag {
+  position: absolute;
+  translate: -50% 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+  z-index: 5;
+}
+.chart-tag-string {
+  width: 1px;
+  height: 12px;
+  background: var(--twine);
+}
+.chart-tag-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 12px;
+  background: var(--paper);
+  color: var(--ink);
+  border-radius: var(--radius-cut);
+  box-shadow: var(--d2);
+  white-space: nowrap;
+}
+
+/* Data table (7.25) */
+.ledger-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.ledger-table th {
+  text-align: left;
+  padding: 0 12px 12px 0;
+  color: var(--fg-soft);
+  font: 500 12px/1.2 var(--font-sans);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.ledger-table td {
+  height: 48px;
+  padding-right: 12px;
+  background-image: linear-gradient(to right, var(--stitch) 57%, transparent 0);
+  background-size: 7px 1px;
+  background-repeat: repeat-x;
+  background-position: left bottom;
+}
+.ledger-table .num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.ledger-table tbody tr {
+  position: relative;
+}
+.ledger-table tbody tr:hover td:first-child {
+  box-shadow: inset 2px 0 0 var(--gold);
+}
+.ledger-table td:first-child {
+  padding-left: 10px;
+}
+@media (max-width: 767px) {
+  .ledger-table thead {
+    display: none;
+  }
+  .ledger-table,
+  .ledger-table tbody,
+  .ledger-table tr,
+  .ledger-table td {
+    display: block;
+    width: 100%;
+  }
+  .ledger-table tr {
+    padding: 12px;
+    margin-bottom: 10px;
+    background: var(--paper-deep);
+    border-radius: var(--radius-cut);
+  }
+  .ledger-table td {
+    height: auto;
+    padding: 3px 0;
+    background: none;
+    display: flex;
+    justify-content: space-between;
+  }
+  .ledger-table td:first-child {
+    padding-left: 0;
+    box-shadow: none !important;
+  }
+  .ledger-table td::before {
+    content: attr(data-label);
+    color: var(--fg-soft);
+    font-size: 13px;
+  }
+}
+
+/* /lab */
+.lab-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+}
+.lab-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 20px;
+  background: var(--bg-raised);
+  color: var(--fg);
+  border-radius: var(--radius-cut);
+  box-shadow: var(--d1);
+  min-width: 0;
+}
+.lab-card header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.lab-card header .type-h3 {
+  flex: 1;
+}
+.lab-demo {
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+}
