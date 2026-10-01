@@ -16,6 +16,10 @@ build/
 .vercel/
 .wrangler/
 *.tsbuildinfo
+# Rust / Anchor (contracts)
+target/
+.anchor/
+test-ledger/
 next-env.d.ts
 
 # ---------------------------------------------------------------
