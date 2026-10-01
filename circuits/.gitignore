@@ -1,0 +1,6 @@
+node_modules/
+build/
+ptau/
+# 34 MB; published with the app (frontend/apps/web/public/zk). Keep a copy: the program's verifying key matches it.
+keys/*.zkey
+keys/*.wasm

@@ -1,0 +1,18 @@
+{
+  "name": "@kitty/circuits",
+  "private": true,
+  "type": "module",
+  "description": "Kitty action circuit (Circom), development setup, witness tests and hash-parity vectors",
+  "scripts": {
+    "compile": "node scripts/compile.mjs",
+    "test": "node test/witness.test.mjs",
+    "setup": "node scripts/setup.mjs",
+    "vectors": "node scripts/vectors.mjs",
+    "fixtures": "node scripts/fixtures.mjs"
+  },
+  "dependencies": {
+    "circomlib": "2.0.5",
+    "circomlibjs": "0.1.7",
+    "snarkjs": "0.7.6"
+  }
+}
