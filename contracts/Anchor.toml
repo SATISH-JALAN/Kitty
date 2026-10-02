@@ -1,0 +1,19 @@
+[toolchain]
+anchor_version = "1.2.0"
+
+[features]
+resolution = true
+skip-lint = false
+
+[programs.localnet]
+kitty = "5BLmkW7GCc2R2AkpetqRPtFy51Gu5jvxLXzPNaQ6m15t"
+
+[programs.devnet]
+kitty = "5BLmkW7GCc2R2AkpetqRPtFy51Gu5jvxLXzPNaQ6m15t"
+
+[provider]
+cluster = "devnet"
+wallet = "~/.config/solana/id.json"
+
+[scripts]
+test = "cd tests && npm test"

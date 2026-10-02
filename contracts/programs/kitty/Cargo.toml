@@ -1,0 +1,38 @@
+[package]
+name = "kitty"
+version = "0.1.0"
+description = "Kitty: private, protected savings parties on Solana"
+edition.workspace = true
+rust-version.workspace = true
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "kitty"
+
+[features]
+default = []
+cpi = ["no-entrypoint"]
+no-entrypoint = []
+no-log-ix-name = []
+idl-build = ["anchor-lang/idl-build", "anchor-spl/idl-build"]
+anchor-debug = []
+custom-heap = []
+custom-panic = []
+
+[dependencies]
+anchor-lang = { version = "1.2.0", features = ["init-if-needed"] }
+anchor-spl = { version = "1.2.0", features = ["token"] }
+bytemuck = { version = "1", features = ["derive", "min_const_generics"] }
+groth16-solana = "0.2.0"
+solana-poseidon = "3"
+solana-keccak-hasher = "3"
+solana-sha256-hasher = "3"
+solana-instructions-sysvar = "3"
+
+[dev-dependencies]
+serde_json = "1"
+solana-keccak-hasher = { version = "3", features = ["sha3"] }
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(target_os, values("solana"))'] }
+deprecated = "allow"
