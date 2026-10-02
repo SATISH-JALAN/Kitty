@@ -1,0 +1,4062 @@
+{
+  "address": "5BLmkW7GCc2R2AkpetqRPtFy51Gu5jvxLXzPNaQ6m15t",
+  "metadata": {
+    "name": "kitty",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Kitty: private, protected savings parties on Solana"
+  },
+  "instructions": [
+    {
+      "name": "cancel_party",
+      "discriminator": [
+        55,
+        151,
+        54,
+        109,
+        127,
+        79,
+        161,
+        184
+      ],
+      "accounts": [
+        {
+          "name": "party",
+          "writable": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "collect",
+      "discriminator": [
+        208,
+        47,
+        194,
+        155,
+        17,
+        98,
+        82,
+        236
+      ],
+      "accounts": [
+        {
+          "name": "signer",
+          "docs": [
+            "The guest's party wallet (`pay_manual`) or any cranker (`collect`)."
+          ],
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "tree",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  114,
+                  101,
+                  101
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "party",
+          "writable": true
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "party"
+              }
+            ]
+          }
+        },
+        {
+          "name": "member_token",
+          "docs": [
+            "The guest's token account (checked against the guest's wallet in the handler)."
+          ],
+          "writable": true
+        },
+        {
+          "name": "treasury",
+          "writable": true
+        },
+        {
+          "name": "house",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  104,
+                  111,
+                  117,
+                  115,
+                  101
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "house_vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  104,
+                  111,
+                  117,
+                  115,
+                  101,
+                  95,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "member_idx",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "create_party",
+      "discriminator": [
+        251,
+        84,
+        246,
+        151,
+        106,
+        204,
+        201,
+        22
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "host",
+          "docs": [
+            "The host's party wallet for this party."
+          ],
+          "signer": true
+        },
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "house",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  104,
+                  111,
+                  117,
+                  115,
+                  101
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "house_vault",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  104,
+                  111,
+                  117,
+                  115,
+                  101,
+                  95,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "party",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  97,
+                  114,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "config.next_party_id",
+                "account": "Config"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "party"
+              }
+            ]
+          }
+        },
+        {
+          "name": "mint"
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "args",
+          "type": {
+            "defined": {
+              "name": "CreatePartyArgs"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "farewell",
+      "discriminator": [
+        13,
+        131,
+        6,
+        246,
+        6,
+        92,
+        83,
+        208
+      ],
+      "accounts": [
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "tree",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  114,
+                  101,
+                  101
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "party",
+          "writable": true
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "party"
+              }
+            ]
+          }
+        },
+        {
+          "name": "member_token",
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "member_idx",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "house_deposit",
+      "discriminator": [
+        31,
+        50,
+        167,
+        151,
+        6,
+        219,
+        85,
+        113
+      ],
+      "accounts": [
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "house",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  104,
+                  111,
+                  117,
+                  115,
+                  101
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "house_vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  104,
+                  111,
+                  117,
+                  115,
+                  101,
+                  95,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "owner_token",
+          "writable": true
+        },
+        {
+          "name": "share",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  112
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "owner"
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "house_withdraw",
+      "discriminator": [
+        91,
+        80,
+        134,
+        212,
+        232,
+        189,
+        132,
+        39
+      ],
+      "accounts": [
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "house",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  104,
+                  111,
+                  117,
+                  115,
+                  101
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "house_vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  104,
+                  111,
+                  117,
+                  115,
+                  101,
+                  95,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "owner_token",
+          "writable": true
+        },
+        {
+          "name": "share",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  112
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "owner"
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "shares",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "initialize",
+      "discriminator": [
+        175,
+        175,
+        109,
+        31,
+        13,
+        152,
+        155,
+        237
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "tree",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  114,
+                  101,
+                  101
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "house",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  104,
+                  111,
+                  117,
+                  115,
+                  101
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "house_vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  104,
+                  111,
+                  117,
+                  115,
+                  101,
+                  95,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "mint"
+        },
+        {
+          "name": "treasury"
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "args",
+          "type": {
+            "defined": {
+              "name": "ConfigParams"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "mark_default",
+      "discriminator": [
+        182,
+        231,
+        123,
+        132,
+        66,
+        208,
+        137,
+        139
+      ],
+      "accounts": [
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "tree",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  114,
+                  101,
+                  101
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "party",
+          "writable": true
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "party"
+              }
+            ]
+          }
+        },
+        {
+          "name": "house",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  104,
+                  111,
+                  117,
+                  115,
+                  101
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "house_vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  104,
+                  111,
+                  117,
+                  115,
+                  101,
+                  95,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "member_idx",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "pay_manual",
+      "discriminator": [
+        228,
+        130,
+        33,
+        159,
+        245,
+        20,
+        241,
+        190
+      ],
+      "accounts": [
+        {
+          "name": "signer",
+          "docs": [
+            "The guest's party wallet (`pay_manual`) or any cranker (`collect`)."
+          ],
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "tree",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  114,
+                  101,
+                  101
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "party",
+          "writable": true
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "party"
+              }
+            ]
+          }
+        },
+        {
+          "name": "member_token",
+          "docs": [
+            "The guest's token account (checked against the guest's wallet in the handler)."
+          ],
+          "writable": true
+        },
+        {
+          "name": "treasury",
+          "writable": true
+        },
+        {
+          "name": "house",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  104,
+                  111,
+                  117,
+                  115,
+                  101
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "house_vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  104,
+                  111,
+                  117,
+                  115,
+                  101,
+                  95,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "register",
+      "discriminator": [
+        211,
+        124,
+        67,
+        15,
+        211,
+        194,
+        178,
+        240
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "docs": [
+            "Fee payer (the relay); pays the marker's rent."
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "tree",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  114,
+                  101,
+                  101
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "marker",
+          "docs": [
+            "Its existence is the \"one person, one pass\" check."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  103
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "nullifier"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "proof",
+          "type": {
+            "defined": {
+              "name": "Proof"
+            }
+          }
+        },
+        {
+          "name": "nullifier",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "timestamp",
+          "type": "u64"
+        },
+        {
+          "name": "first_commitment",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "register_dev",
+      "discriminator": [
+        60,
+        91,
+        40,
+        79,
+        202,
+        64,
+        119,
+        49
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "config"
+          ]
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "tree",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  114,
+                  101,
+                  101
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "marker",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  103
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "dev_nullifier"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "dev_nullifier",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "first_commitment",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "request_draw",
+      "discriminator": [
+        22,
+        180,
+        8,
+        81,
+        47,
+        21,
+        86,
+        159
+      ],
+      "accounts": [
+        {
+          "name": "party",
+          "writable": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "resolve_draw",
+      "discriminator": [
+        115,
+        132,
+        65,
+        125,
+        65,
+        181,
+        26,
+        60
+      ],
+      "accounts": [
+        {
+          "name": "party",
+          "writable": true
+        },
+        {
+          "name": "randomness"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "rsvp",
+      "discriminator": [
+        134,
+        164,
+        221,
+        33,
+        183,
+        12,
+        73,
+        32
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "wallet",
+          "docs": [
+            "The guest's party wallet for this party (bound into the proof's params hash)."
+          ],
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "tree",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  114,
+                  101,
+                  101
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "party",
+          "writable": true
+        },
+        {
+          "name": "house",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  104,
+                  111,
+                  117,
+                  115,
+                  101
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "nullifier_marker",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  110,
+                  102
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "args.nullifier"
+              }
+            ]
+          }
+        },
+        {
+          "name": "wallet_token",
+          "docs": [
+            "The wallet's token account; auto-pay is the party PDA as its SPL delegate."
+          ]
+        },
+        {
+          "name": "instructions",
+          "address": "Sysvar1nstructions1111111111111111111111111"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "args",
+          "type": {
+            "defined": {
+              "name": "RsvpArgs"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "settle_round",
+      "discriminator": [
+        40,
+        101,
+        18,
+        1,
+        31,
+        129,
+        52,
+        77
+      ],
+      "accounts": [
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "party",
+          "writable": true
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "party"
+              }
+            ]
+          }
+        },
+        {
+          "name": "house",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  104,
+                  111,
+                  117,
+                  115,
+                  101
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "house_vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  104,
+                  111,
+                  117,
+                  115,
+                  101,
+                  95,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "winner_token",
+          "docs": [
+            "Tonight's guest's token account (for a House seat: the removed guest's, for their refund)."
+          ],
+          "writable": true
+        },
+        {
+          "name": "host_token",
+          "docs": [
+            "The host's token account; the same account as `winner_token` when the host takes the kitty."
+          ],
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "settle_up",
+      "discriminator": [
+        135,
+        8,
+        150,
+        235,
+        244,
+        188,
+        164,
+        49
+      ],
+      "accounts": [
+        {
+          "name": "wallet",
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "tree",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  114,
+                  101,
+                  101
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "party",
+          "writable": true
+        },
+        {
+          "name": "wallet_token",
+          "writable": true
+        },
+        {
+          "name": "house",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  104,
+                  111,
+                  117,
+                  115,
+                  101
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "house_vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  104,
+                  111,
+                  117,
+                  115,
+                  101,
+                  95,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "unvouch",
+      "discriminator": [
+        196,
+        230,
+        161,
+        123,
+        235,
+        3,
+        34,
+        245
+      ],
+      "accounts": [
+        {
+          "name": "voucher",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "vouch"
+          ]
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "party",
+          "relations": [
+            "vouch"
+          ]
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "party"
+              }
+            ]
+          }
+        },
+        {
+          "name": "voucher_token",
+          "writable": true
+        },
+        {
+          "name": "vouch",
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "update_config",
+      "discriminator": [
+        29,
+        158,
+        252,
+        191,
+        10,
+        83,
+        219,
+        99
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "signer": true,
+          "relations": [
+            "config"
+          ]
+        },
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "args",
+          "type": {
+            "defined": {
+              "name": "ConfigParams"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "update_note",
+      "discriminator": [
+        103,
+        129,
+        251,
+        34,
+        33,
+        154,
+        210,
+        148
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "wallet",
+          "docs": [
+            "The guest's party wallet for this party."
+          ],
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "tree",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  114,
+                  101,
+                  101
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "party"
+        },
+        {
+          "name": "nullifier_marker",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  110,
+                  102
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "args.nullifier"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "args",
+          "type": {
+            "defined": {
+              "name": "NoteArgs"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "verify_history",
+      "discriminator": [
+        234,
+        201,
+        117,
+        126,
+        73,
+        250,
+        194,
+        223
+      ],
+      "accounts": [
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "tree",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  114,
+                  101,
+                  101
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "nullifier_marker",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  110,
+                  102
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "args.nullifier"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "args",
+          "type": {
+            "defined": {
+              "name": "HistoryArgs"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "vouch",
+      "discriminator": [
+        87,
+        240,
+        8,
+        21,
+        219,
+        179,
+        242,
+        177
+      ],
+      "accounts": [
+        {
+          "name": "voucher",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "party",
+          "writable": true
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "party"
+              }
+            ]
+          }
+        },
+        {
+          "name": "voucher_token",
+          "writable": true
+        },
+        {
+          "name": "vouch",
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "member_idx",
+          "type": "u8"
+        },
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Config",
+      "discriminator": [
+        155,
+        12,
+        170,
+        224,
+        30,
+        250,
+        204,
+        130
+      ]
+    },
+    {
+      "name": "HouseFund",
+      "discriminator": [
+        39,
+        58,
+        81,
+        233,
+        221,
+        100,
+        214,
+        165
+      ]
+    },
+    {
+      "name": "HouseShare",
+      "discriminator": [
+        211,
+        192,
+        153,
+        78,
+        24,
+        93,
+        4,
+        83
+      ]
+    },
+    {
+      "name": "KittyTree",
+      "discriminator": [
+        97,
+        73,
+        153,
+        28,
+        235,
+        8,
+        217,
+        104
+      ]
+    },
+    {
+      "name": "Marker",
+      "discriminator": [
+        190,
+        81,
+        208,
+        182,
+        158,
+        86,
+        51,
+        154
+      ]
+    },
+    {
+      "name": "Party",
+      "discriminator": [
+        208,
+        64,
+        165,
+        146,
+        114,
+        138,
+        161,
+        100
+      ]
+    },
+    {
+      "name": "VouchStake",
+      "discriminator": [
+        223,
+        171,
+        136,
+        2,
+        107,
+        117,
+        235,
+        144
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "ChipIn",
+      "discriminator": [
+        10,
+        100,
+        227,
+        237,
+        175,
+        120,
+        254,
+        153
+      ]
+    },
+    {
+      "name": "Defaulted",
+      "discriminator": [
+        56,
+        74,
+        221,
+        194,
+        133,
+        27,
+        201,
+        235
+      ]
+    },
+    {
+      "name": "DrawRequested",
+      "discriminator": [
+        59,
+        172,
+        219,
+        42,
+        28,
+        94,
+        93,
+        75
+      ]
+    },
+    {
+      "name": "DrawResolved",
+      "discriminator": [
+        127,
+        177,
+        62,
+        146,
+        164,
+        90,
+        185,
+        218
+      ]
+    },
+    {
+      "name": "Farewell",
+      "discriminator": [
+        123,
+        180,
+        175,
+        77,
+        220,
+        254,
+        29,
+        64
+      ]
+    },
+    {
+      "name": "HistoryVerified",
+      "discriminator": [
+        65,
+        160,
+        0,
+        246,
+        101,
+        204,
+        3,
+        127
+      ]
+    },
+    {
+      "name": "HouseFlow",
+      "discriminator": [
+        252,
+        246,
+        131,
+        108,
+        159,
+        20,
+        239,
+        142
+      ]
+    },
+    {
+      "name": "LeafAppended",
+      "discriminator": [
+        253,
+        59,
+        85,
+        246,
+        117,
+        213,
+        27,
+        175
+      ]
+    },
+    {
+      "name": "MemberJoined",
+      "discriminator": [
+        156,
+        199,
+        149,
+        88,
+        193,
+        203,
+        191,
+        210
+      ]
+    },
+    {
+      "name": "NoteUpdated",
+      "discriminator": [
+        239,
+        214,
+        135,
+        125,
+        32,
+        149,
+        42,
+        172
+      ]
+    },
+    {
+      "name": "PartyCreated",
+      "discriminator": [
+        181,
+        103,
+        87,
+        221,
+        198,
+        141,
+        108,
+        58
+      ]
+    },
+    {
+      "name": "PartyUpdated",
+      "discriminator": [
+        18,
+        118,
+        117,
+        3,
+        239,
+        125,
+        241,
+        111
+      ]
+    },
+    {
+      "name": "Registered",
+      "discriminator": [
+        11,
+        222,
+        10,
+        72,
+        160,
+        110,
+        165,
+        227
+      ]
+    },
+    {
+      "name": "RoundSettled",
+      "discriminator": [
+        249,
+        225,
+        66,
+        54,
+        157,
+        200,
+        234,
+        222
+      ]
+    },
+    {
+      "name": "SettledUp",
+      "discriminator": [
+        96,
+        171,
+        17,
+        214,
+        196,
+        219,
+        32,
+        192
+      ]
+    },
+    {
+      "name": "Vouched",
+      "discriminator": [
+        180,
+        82,
+        0,
+        239,
+        187,
+        252,
+        100,
+        222
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "NotAdmin",
+      "msg": "Only the config admin can do this"
+    },
+    {
+      "code": 6001,
+      "name": "Paused",
+      "msg": "New parties are paused"
+    },
+    {
+      "code": 6002,
+      "name": "DevRegisterOff",
+      "msg": "Dev registration is off"
+    },
+    {
+      "code": 6003,
+      "name": "InvalidProof",
+      "msg": "The proof does not verify"
+    },
+    {
+      "code": 6004,
+      "name": "BadFieldElement",
+      "msg": "A value is not a valid field element"
+    },
+    {
+      "code": 6005,
+      "name": "UnknownRoot",
+      "msg": "The proof's root is not one of the last 64 roots"
+    },
+    {
+      "code": 6006,
+      "name": "BadClock",
+      "msg": "The proof's clock is too far from the chain's"
+    },
+    {
+      "code": 6007,
+      "name": "TreeFull",
+      "msg": "The Kitty tree is full"
+    },
+    {
+      "code": 6008,
+      "name": "BadGuestCount",
+      "msg": "A party has 4 to 20 guests"
+    },
+    {
+      "code": 6009,
+      "name": "HostFeeTooHigh",
+      "msg": "The host fee is above the cap"
+    },
+    {
+      "code": 6010,
+      "name": "GraceTooShort",
+      "msg": "Grace hours are shorter than allowed"
+    },
+    {
+      "code": 6011,
+      "name": "BadTiming",
+      "msg": "Bad party timing"
+    },
+    {
+      "code": 6012,
+      "name": "BadMode",
+      "msg": "Unknown order mode"
+    },
+    {
+      "code": 6013,
+      "name": "ReserveTooLow",
+      "msg": "The House Fund reserve is too low for another party"
+    },
+    {
+      "code": 6014,
+      "name": "NotForming",
+      "msg": "This party is not open for RSVPs"
+    },
+    {
+      "code": 6015,
+      "name": "PartyFull",
+      "msg": "This party is full"
+    },
+    {
+      "code": 6016,
+      "name": "FormationClosed",
+      "msg": "The RSVP window has closed"
+    },
+    {
+      "code": 6017,
+      "name": "AlreadyJoined",
+      "msg": "This guest is already at the party"
+    },
+    {
+      "code": 6018,
+      "name": "NoSeat",
+      "msg": "No seat is left for this tier"
+    },
+    {
+      "code": 6019,
+      "name": "AutoPayMissing",
+      "msg": "Auto-pay is not approved for this party"
+    },
+    {
+      "code": 6020,
+      "name": "BadInvite",
+      "msg": "The invite signature is missing or wrong"
+    },
+    {
+      "code": 6021,
+      "name": "NotActive",
+      "msg": "This party is not running"
+    },
+    {
+      "code": 6022,
+      "name": "NotAGuest",
+      "msg": "Not a guest of this party"
+    },
+    {
+      "code": 6023,
+      "name": "NothingDue",
+      "msg": "Nothing is due"
+    },
+    {
+      "code": 6024,
+      "name": "NotDue",
+      "msg": "This round is not due yet"
+    },
+    {
+      "code": 6025,
+      "name": "WrongRound",
+      "msg": "Wrong round"
+    },
+    {
+      "code": 6026,
+      "name": "DrawPending",
+      "msg": "The Draw is already requested"
+    },
+    {
+      "code": 6027,
+      "name": "NoDraw",
+      "msg": "No Draw for this round yet"
+    },
+    {
+      "code": 6028,
+      "name": "BadRandomness",
+      "msg": "The randomness account is wrong"
+    },
+    {
+      "code": 6029,
+      "name": "RandomnessPending",
+      "msg": "The randomness is not fulfilled yet"
+    },
+    {
+      "code": 6030,
+      "name": "NoEligibleGuest",
+      "msg": "No guest is eligible tonight"
+    },
+    {
+      "code": 6031,
+      "name": "NotDrawMode",
+      "msg": "This party uses a seating plan"
+    },
+    {
+      "code": 6032,
+      "name": "WinnerInGrace",
+      "msg": "Tonight's guest is in grace hours"
+    },
+    {
+      "code": 6033,
+      "name": "HouseFundShort",
+      "msg": "The House Fund cannot cover this"
+    },
+    {
+      "code": 6034,
+      "name": "WrongTokenAccount",
+      "msg": "A token account does not match"
+    },
+    {
+      "code": 6035,
+      "name": "GraceNotOver",
+      "msg": "Grace hours have not ended"
+    },
+    {
+      "code": 6036,
+      "name": "NotInGrace",
+      "msg": "This guest is not in grace hours"
+    },
+    {
+      "code": 6037,
+      "name": "NothingToSettle",
+      "msg": "Nothing to settle"
+    },
+    {
+      "code": 6038,
+      "name": "AlreadyTook",
+      "msg": "This guest already took the kitty"
+    },
+    {
+      "code": 6039,
+      "name": "NotFinished",
+      "msg": "The party has not finished"
+    },
+    {
+      "code": 6040,
+      "name": "AlreadyFarewelled",
+      "msg": "Farewell already done"
+    },
+    {
+      "code": 6041,
+      "name": "SettleUpFirst",
+      "msg": "Settle up before Farewell"
+    },
+    {
+      "code": 6042,
+      "name": "NoFarewell",
+      "msg": "Farewell has not happened for this guest"
+    },
+    {
+      "code": 6043,
+      "name": "NullifierSpent",
+      "msg": "The nullifier is already spent"
+    },
+    {
+      "code": 6044,
+      "name": "PartyFilled",
+      "msg": "The party filled up in time"
+    },
+    {
+      "code": 6045,
+      "name": "ReserveRule",
+      "msg": "The House Fund reserve rule blocks this withdrawal"
+    },
+    {
+      "code": 6046,
+      "name": "ZeroAmount",
+      "msg": "Amount must be above zero"
+    },
+    {
+      "code": 6047,
+      "name": "Overflow",
+      "msg": "Math overflow"
+    }
+  ],
+  "types": [
+    {
+      "name": "ChipIn",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "party",
+            "type": "u64"
+          },
+          {
+            "name": "member_idx",
+            "type": "u8"
+          },
+          {
+            "name": "paid_through",
+            "docs": [
+              "Rounds now covered."
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "rounds",
+            "type": "u8"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "late",
+            "type": "bool"
+          },
+          {
+            "name": "keepsafe_released",
+            "type": "u64"
+          },
+          {
+            "name": "by_butler",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Config",
+      "docs": [
+        "Program parameters (architecture 4.1). The admin can tune fees within caps and pause new",
+        "parties; nothing here can move a vault."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "admin",
+            "type": "pubkey"
+          },
+          {
+            "name": "mint",
+            "docs": [
+              "The 6-decimal test token (kUSD) or devnet USDC."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "treasury",
+            "docs": [
+              "Token account that receives the Kitty fee."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "protocol_bps",
+            "type": "u16"
+          },
+          {
+            "name": "cover_bps",
+            "type": "u16"
+          },
+          {
+            "name": "late_bps",
+            "type": "u16"
+          },
+          {
+            "name": "max_host_bps",
+            "type": "u16"
+          },
+          {
+            "name": "min_grace_secs",
+            "docs": [
+              "Shortest grace a party may use (devnet demo parties use minutes, not 72 hours)."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "collect_window_secs",
+            "docs": [
+              "How long after a round is due before it can be settled (the Butler collects in between)."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "now_tolerance_secs",
+            "docs": [
+              "Allowed gap between a proof's `now` and the Solana clock (T7)."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "allowance",
+            "docs": [
+              "Starter kitty limit (product doc 11.1)."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "aadhaar_pubkey_hash",
+            "docs": [
+              "Anon Aadhaar RSA public-key hash this deployment accepts (the test key on devnet)."
+            ],
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "nullifier_seed",
+            "docs": [
+              "Kitty's Anon Aadhaar nullifier seed (app id)."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "next_party_id",
+            "type": "u64"
+          },
+          {
+            "name": "dev_register",
+            "docs": [
+              "Devnet only: the admin may register test identities without an Aadhaar proof (harness bots)."
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "paused",
+            "type": "bool"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ConfigParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "protocol_bps",
+            "type": "u16"
+          },
+          {
+            "name": "cover_bps",
+            "type": "u16"
+          },
+          {
+            "name": "late_bps",
+            "type": "u16"
+          },
+          {
+            "name": "max_host_bps",
+            "type": "u16"
+          },
+          {
+            "name": "min_grace_secs",
+            "type": "i64"
+          },
+          {
+            "name": "collect_window_secs",
+            "type": "i64"
+          },
+          {
+            "name": "now_tolerance_secs",
+            "type": "i64"
+          },
+          {
+            "name": "allowance",
+            "type": "u64"
+          },
+          {
+            "name": "aadhaar_pubkey_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "nullifier_seed",
+            "type": "u64"
+          },
+          {
+            "name": "dev_register",
+            "type": "bool"
+          },
+          {
+            "name": "paused",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CreatePartyArgs",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "chip_in",
+            "type": "u64"
+          },
+          {
+            "name": "guests",
+            "type": "u8"
+          },
+          {
+            "name": "period_secs",
+            "type": "i64"
+          },
+          {
+            "name": "grace_secs",
+            "type": "i64"
+          },
+          {
+            "name": "start_ts",
+            "type": "i64"
+          },
+          {
+            "name": "formation_deadline",
+            "type": "i64"
+          },
+          {
+            "name": "mode",
+            "type": "u8"
+          },
+          {
+            "name": "host_fee_bps",
+            "type": "u16"
+          },
+          {
+            "name": "min_tier",
+            "type": "u8"
+          },
+          {
+            "name": "invite_key",
+            "docs": [
+              "Public half of the invite key; the invite link carries the secret in its fragment."
+            ],
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Defaulted",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "party",
+            "type": "u64"
+          },
+          {
+            "name": "member_idx",
+            "type": "u8"
+          },
+          {
+            "name": "missed",
+            "type": "u64"
+          },
+          {
+            "name": "from_keepsafe",
+            "type": "u64"
+          },
+          {
+            "name": "from_plus_ones",
+            "type": "u64"
+          },
+          {
+            "name": "from_house",
+            "type": "u64"
+          },
+          {
+            "name": "removed",
+            "docs": [
+              "A guest who had not taken the kitty is removed and the House Fund takes the seat."
+            ],
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "DrawRequested",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "party",
+            "type": "u64"
+          },
+          {
+            "name": "round",
+            "type": "u8"
+          },
+          {
+            "name": "seed",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "DrawResolved",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "party",
+            "type": "u64"
+          },
+          {
+            "name": "round",
+            "type": "u8"
+          },
+          {
+            "name": "winner_idx",
+            "type": "u8"
+          },
+          {
+            "name": "eligible",
+            "type": "u8"
+          },
+          {
+            "name": "gate_relaxed",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Farewell",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "party",
+            "type": "u64"
+          },
+          {
+            "name": "member_idx",
+            "type": "u8"
+          },
+          {
+            "name": "paid_rounds",
+            "type": "u8"
+          },
+          {
+            "name": "late_count",
+            "type": "u8"
+          },
+          {
+            "name": "payout",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "HistoryArgs",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "proof",
+            "type": {
+              "defined": {
+                "name": "Proof"
+              }
+            }
+          },
+          {
+            "name": "nullifier",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "pseudonym",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "root",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "now",
+            "type": "i64"
+          },
+          {
+            "name": "min_completed",
+            "type": "u64"
+          },
+          {
+            "name": "min_paid",
+            "type": "u64"
+          },
+          {
+            "name": "max_late",
+            "type": "u64"
+          },
+          {
+            "name": "scope",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "challenge",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "HistoryVerified",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "pseudonym",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "scope",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "challenge",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "min_completed",
+            "type": "u64"
+          },
+          {
+            "name": "min_paid",
+            "type": "u64"
+          },
+          {
+            "name": "max_late",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "HouseFlow",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "kind",
+            "docs": [
+              "0 fee in, 1 cover out, 2 settle in, 3 late fee, 4 deposit, 5 withdraw, 6 seat payout, 7 reimbursed"
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "balance",
+            "type": "u64"
+          },
+          {
+            "name": "party",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "HouseFund",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "total_shares",
+            "type": "u64"
+          },
+          {
+            "name": "fees_in",
+            "type": "u64"
+          },
+          {
+            "name": "paid_out",
+            "type": "u64"
+          },
+          {
+            "name": "exposure",
+            "docs": [
+              "Σ exposure of active parties."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "vault_bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "HouseShare",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "shares",
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "KittyTree",
+      "docs": [
+        "The Kitty tree: an append-only Poseidon Merkle tree of notes, receipts and completion leaves,",
+        "with the last 64 roots (architecture 4.1, 7.3)."
+      ],
+      "serialization": "bytemuck",
+      "repr": {
+        "kind": "c"
+      },
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "next_index",
+            "type": "u64"
+          },
+          {
+            "name": "root_index",
+            "type": "u64"
+          },
+          {
+            "name": "filled",
+            "type": {
+              "array": [
+                {
+                  "array": [
+                    "u8",
+                    32
+                  ]
+                },
+                26
+              ]
+            }
+          },
+          {
+            "name": "zeros",
+            "type": {
+              "array": [
+                {
+                  "array": [
+                    "u8",
+                    32
+                  ]
+                },
+                27
+              ]
+            }
+          },
+          {
+            "name": "roots",
+            "type": {
+              "array": [
+                {
+                  "array": [
+                    "u8",
+                    32
+                  ]
+                },
+                64
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "LeafAppended",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "index",
+            "type": "u64"
+          },
+          {
+            "name": "leaf",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "kind",
+            "docs": [
+              "1 note, 2 receipt, 3 completion"
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "root",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Marker",
+      "docs": [
+        "Existence is the check (registration nullifiers and spent note nullifiers)."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Member",
+      "docs": [
+        "One guest, inside the party account. Guests are known only by their party tag."
+      ],
+      "serialization": "bytemuck",
+      "repr": {
+        "kind": "c"
+      },
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "keepsafe",
+            "docs": [
+              "Keepsafe still held for this guest (released with each later chip-in)."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "keepsafe_total",
+            "docs": [
+              "Keepsafe at the moment they took the kitty."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "remaining",
+            "docs": [
+              "Remaining obligation R = c(N − s) when they took the kitty."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "vouched",
+            "docs": [
+              "Plus-one stakes behind this guest, and how much of them the waterfall used."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "vouch_slashed",
+            "type": "u64"
+          },
+          {
+            "name": "advance",
+            "docs": [
+              "Chip-ins the House Fund fronted while this guest is in grace."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "debt",
+            "docs": [
+              "What the House Fund covered after a default (repaid by settling up)."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "house_paid",
+            "docs": [
+              "Chip-ins the House Fund paid for a removed guest's seat."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "grace_deadline",
+            "type": "i64"
+          },
+          {
+            "name": "tag",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "wallet",
+            "type": "pubkey"
+          },
+          {
+            "name": "tier",
+            "type": "u8"
+          },
+          {
+            "name": "is_host",
+            "type": "u8"
+          },
+          {
+            "name": "seat",
+            "docs": [
+              "Earliest night this guest may take the kitty (Draw), or their night (seating plan)."
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "took_night",
+            "docs": [
+              "The night they took the kitty, 0 if not yet."
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "paid_through",
+            "docs": [
+              "Rounds covered (by the guest, the waterfall or the House Fund for a removed seat)."
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "own_paid",
+            "docs": [
+              "Rounds the guest paid themselves."
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "status",
+            "type": "u8"
+          },
+          {
+            "name": "late_count",
+            "type": "u8"
+          },
+          {
+            "name": "missed_nights",
+            "type": "u8"
+          },
+          {
+            "name": "gate_relaxed",
+            "type": "u8"
+          },
+          {
+            "name": "farewelled",
+            "type": "u8"
+          },
+          {
+            "name": "_pad",
+            "type": {
+              "array": [
+                "u8",
+                5
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "MemberJoined",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "party",
+            "type": "u64"
+          },
+          {
+            "name": "member_idx",
+            "type": "u8"
+          },
+          {
+            "name": "tag",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "wallet",
+            "type": "pubkey"
+          },
+          {
+            "name": "tier",
+            "type": "u8"
+          },
+          {
+            "name": "seat",
+            "type": "u8"
+          },
+          {
+            "name": "gate_relaxed",
+            "type": "bool"
+          },
+          {
+            "name": "is_host",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "NoteArgs",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "proof",
+            "type": {
+              "defined": {
+                "name": "Proof"
+              }
+            }
+          },
+          {
+            "name": "nullifier",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "new_commitment",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "tag",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "root",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "now",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "NoteUpdated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "party",
+            "type": "u64"
+          },
+          {
+            "name": "member_idx",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Party",
+      "docs": [
+        "A party (architecture 4.1). Fixed size, zero-copy."
+      ],
+      "serialization": "bytemuck",
+      "repr": {
+        "kind": "c"
+      },
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "id",
+            "type": "u64"
+          },
+          {
+            "name": "chip_in",
+            "type": "u64"
+          },
+          {
+            "name": "exposure",
+            "docs": [
+              "The House Fund cover this party adds while active."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "allowance",
+            "type": "u64"
+          },
+          {
+            "name": "unlocked_by_tier",
+            "type": {
+              "array": [
+                "u64",
+                3
+              ]
+            }
+          },
+          {
+            "name": "period_secs",
+            "type": "i64"
+          },
+          {
+            "name": "grace_secs",
+            "type": "i64"
+          },
+          {
+            "name": "start_ts",
+            "type": "i64"
+          },
+          {
+            "name": "formation_deadline",
+            "type": "i64"
+          },
+          {
+            "name": "created_ts",
+            "type": "i64"
+          },
+          {
+            "name": "host_wallet",
+            "type": "pubkey"
+          },
+          {
+            "name": "invite_key",
+            "type": "pubkey"
+          },
+          {
+            "name": "vault",
+            "type": "pubkey"
+          },
+          {
+            "name": "draw_seed",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "host_fee_bps",
+            "type": "u16"
+          },
+          {
+            "name": "guests",
+            "type": "u8"
+          },
+          {
+            "name": "mode",
+            "type": "u8"
+          },
+          {
+            "name": "min_tier",
+            "type": "u8"
+          },
+          {
+            "name": "status",
+            "type": "u8"
+          },
+          {
+            "name": "current_round",
+            "docs": [
+              "Rounds settled so far."
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "joined",
+            "type": "u8"
+          },
+          {
+            "name": "draw_round",
+            "type": "u8"
+          },
+          {
+            "name": "draw_winner",
+            "type": "u8"
+          },
+          {
+            "name": "draw_relaxed",
+            "type": "u8"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "vault_bump",
+            "type": "u8"
+          },
+          {
+            "name": "_pad",
+            "type": {
+              "array": [
+                "u8",
+                3
+              ]
+            }
+          },
+          {
+            "name": "members",
+            "type": {
+              "array": [
+                {
+                  "defined": {
+                    "name": "Member"
+                  }
+                },
+                20
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "PartyCreated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "party",
+            "type": "u64"
+          },
+          {
+            "name": "host_wallet",
+            "type": "pubkey"
+          },
+          {
+            "name": "chip_in",
+            "type": "u64"
+          },
+          {
+            "name": "guests",
+            "type": "u8"
+          },
+          {
+            "name": "period_secs",
+            "type": "i64"
+          },
+          {
+            "name": "grace_secs",
+            "type": "i64"
+          },
+          {
+            "name": "start_ts",
+            "type": "i64"
+          },
+          {
+            "name": "formation_deadline",
+            "type": "i64"
+          },
+          {
+            "name": "mode",
+            "type": "u8"
+          },
+          {
+            "name": "host_fee_bps",
+            "type": "u16"
+          },
+          {
+            "name": "min_tier",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PartyUpdated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "party",
+            "type": "u64"
+          },
+          {
+            "name": "status",
+            "docs": [
+              "0 forming, 1 active, 2 finished, 3 cancelled"
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "current_round",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Proof",
+      "docs": [
+        "A Groth16 proof in groth16-solana layout (A negated; G2 as c1‖c0)."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "a",
+            "type": {
+              "array": [
+                "u8",
+                64
+              ]
+            }
+          },
+          {
+            "name": "b",
+            "type": {
+              "array": [
+                "u8",
+                128
+              ]
+            }
+          },
+          {
+            "name": "c",
+            "type": {
+              "array": [
+                "u8",
+                64
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Registered",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "nullifier",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "leaf_index",
+            "type": "u64"
+          },
+          {
+            "name": "dev",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RoundSettled",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "party",
+            "type": "u64"
+          },
+          {
+            "name": "round",
+            "type": "u8"
+          },
+          {
+            "name": "winner_idx",
+            "type": "u8"
+          },
+          {
+            "name": "kitty",
+            "type": "u64"
+          },
+          {
+            "name": "paid_now",
+            "type": "u64"
+          },
+          {
+            "name": "keepsafe",
+            "type": "u64"
+          },
+          {
+            "name": "host_fee",
+            "type": "u64"
+          },
+          {
+            "name": "house_fronted",
+            "docs": [
+              "Chip-ins the House Fund fronted for guests in grace (or paid for a removed seat)."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "to_house",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RsvpArgs",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "proof",
+            "type": {
+              "defined": {
+                "name": "Proof"
+              }
+            }
+          },
+          {
+            "name": "nullifier",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "new_commitment",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "tag",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "tier",
+            "type": "u8"
+          },
+          {
+            "name": "root",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "now",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SettledUp",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "party",
+            "type": "u64"
+          },
+          {
+            "name": "member_idx",
+            "type": "u8"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "VouchStake",
+      "docs": [
+        "A plus-one stake behind one guest."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "party",
+            "type": "pubkey"
+          },
+          {
+            "name": "voucher",
+            "type": "pubkey"
+          },
+          {
+            "name": "member_idx",
+            "type": "u8"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Vouched",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "party",
+            "type": "u64"
+          },
+          {
+            "name": "member_idx",
+            "type": "u8"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "total",
+            "type": "u64"
+          }
+        ]
+      }
+    }
+  ]
+}
