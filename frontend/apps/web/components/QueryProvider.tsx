@@ -1,5 +1,6 @@
 "use client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import dynamic from "next/dynamic";
 import type { ReactNode } from "react";
 
 /**
@@ -7,6 +8,9 @@ import type { ReactNode } from "react";
  * data). One client per browser session, so the cache survives moving between the
  * two route groups (Tonight → the Draw); a fresh one per server render.
  */
+/** Privy login, fetched only when an app ID is configured (demo sign-in otherwise). */
+const PrivyBridge = process.env.NEXT_PUBLIC_PRIVY_APP_ID ? dynamic(() => import("./PrivyBridge"), { ssr: false }) : null;
+
 let browserClient: QueryClient | undefined;
 
 function makeClient() {
@@ -19,5 +23,10 @@ function getClient() {
 }
 
 export function QueryProvider({ children }: { children: ReactNode }) {
-  return <QueryClientProvider client={getClient()}>{children}</QueryClientProvider>;
+  return (
+    <QueryClientProvider client={getClient()}>
+      {children}
+      {PrivyBridge && <PrivyBridge />}
+    </QueryClientProvider>
+  );
 }
