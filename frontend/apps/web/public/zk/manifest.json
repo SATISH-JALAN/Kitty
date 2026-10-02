@@ -1,0 +1,25 @@
+{
+  "circuit": "kitty_action",
+  "publicSignals": [
+    "nullifier",
+    "outCommitment",
+    "outTag",
+    "outClaim",
+    "root",
+    "now",
+    "paramsHash",
+    "mode"
+  ],
+  "wasm": {
+    "file": "kitty_action.wasm",
+    "sha256": "3dff5e39a384767cf931f5d481da1808ffa7465bd4b3c9ae737536bb12ebb0a5",
+    "bytes": 7642695
+  },
+  "zkey": {
+    "file": "kitty_action.zkey",
+    "sha256": "8f357b642ee164c22c4363703b238044f13e7a44fdfdb63603e952333e3c33a9",
+    "bytes": 34024562
+  },
+  "vkSha256": "a511686175be36f5a53087fc8d1e20ef7de45fb8bbb7323cd44cafc08453ebf0",
+  "createdAt": "2026-10-01T20:47:11.589Z"
+}

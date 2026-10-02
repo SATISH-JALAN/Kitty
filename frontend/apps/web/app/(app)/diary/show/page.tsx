@@ -18,7 +18,7 @@ import { toast } from "@kitty/ui/components/Toast";
 import { PageHeader } from "@/components/chrome/PageHeader";
 import { DiaryPage } from "@/components/stage/Booklet";
 import { copy } from "@/copy/en";
-import { useMe } from "@/data/api";
+import { IS_SAMPLE, useMe } from "@/data/api";
 
 type ClaimId = "finished" | "never" | "chipped";
 
@@ -80,8 +80,27 @@ export default function ShowPage() {
   const statement = claims.filter((c) => picked[c.id] && c.enabled).map((c) => c.text).join(" · ");
   const ready = statement.length > 0 && scope.trim().length > 1;
 
+  const [failed, setFailed] = useState<string | null>(null);
+  const [pageId, setPageId] = useState<string | null>(null);
+  const [onChain, setOnChain] = useState<"idle" | "busy" | "done" | "error">("idle");
   const make = async () => {
     setStartedAt(Date.now());
+    setFailed(null);
+    if (!IS_SAMPLE) {
+      try {
+        const { showPage } = await import("@/lib/kitty/actions");
+        const r = await showPage(
+          { minCompleted: picked.finished ? nFinished : 0, minPaid: BigInt(picked.chipped ? nChipped : 0), maxLate: picked.never ? 0 : 1_000_000, scopeLabel: scope },
+          (i, status) => setSteps((s) => s.map((st, n) => (n === i ? { ...st, status, progress: status === "done" ? 1 : null } : st))),
+        );
+        setPageId(r.id);
+        setLink(r.url);
+      } catch (e) {
+        setFailed((e as Error).message?.length < 140 ? (e as Error).message : copy.error.proof);
+        setSteps((s) => s.map((st) => (st.status === "working" ? { ...st, status: "error" } : st)));
+      }
+      return;
+    }
     setSteps((s) => s.map((st, i) => (i === 0 ? { ...st, status: "working", progress: null } : st)));
     await new Promise((r) => setTimeout(r, 4600));
     setSteps((s) => s.map((st, i) => (i === 0 ? { ...st, status: "done" } : { ...st, status: "working", progress: 0.5 })));
@@ -148,7 +167,7 @@ export default function ShowPage() {
                 {copy.cta.showPage}
               </Button>
             ) : (
-              <LanternStepper steps={steps} startedAt={startedAt} label="Page proof" />
+              <LanternStepper steps={steps} startedAt={startedAt} label="Page proof" onRetry={failed ? make : undefined} errorText={failed ?? undefined} />
             )}
           </li>
         </ol>
@@ -174,8 +193,24 @@ export default function ShowPage() {
                 <span className="type-mono">{link.replace(/^https?:\/\//, "")}</span>
                 <CopyButton value={link} label="Copy verification link" onCopied={() => toast({ text: copy.toast.copied, icon: "copy" })} />
               </div>
-              <Button variant="ghost" size="S">
-                Verify on-chain (optional)
+              <Button
+                variant="ghost"
+                size="S"
+                busy={onChain === "busy"}
+                disabled={IS_SAMPLE || !pageId || onChain === "done"}
+                onClick={async () => {
+                  if (!pageId) return;
+                  setOnChain("busy");
+                  try {
+                    const { verifyPageOnChain } = await import("@/lib/kitty/actions");
+                    await verifyPageOnChain(pageId);
+                    setOnChain("done");
+                  } catch {
+                    setOnChain("error");
+                  }
+                }}
+              >
+                {onChain === "done" ? "Verified on-chain" : onChain === "error" ? "Couldn't verify on-chain. Try again" : "Verify on-chain (optional)"}
               </Button>
               <p className="type-small" style={{ color: "var(--ink-soft)" }}>
                 This page shows only what you picked.

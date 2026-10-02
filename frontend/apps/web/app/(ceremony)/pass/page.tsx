@@ -22,7 +22,7 @@ import { useIrisEntry } from "@/components/chrome/Transition";
 import { Door } from "@/components/stage/Door";
 import { copy } from "@/copy/en";
 import { PRIVY_APP_ID, useSession } from "@/data/session";
-import { ProofError, proveRegistration, readTestQr, type ProofEvent } from "@/lib/prover";
+import { ProofError, makeTestQr, proveRegistration, readTestQr, type ProofEvent } from "@/lib/prover";
 
 const NEVER = ["Your name", "Your ID number", "Your photo", "Your address", "Your date of birth"];
 const STEP_LABELS = ["Fetch keys", "Build proof", "Send"];
@@ -100,6 +100,8 @@ export default function PassPage() {
   const [emailErr, setEmailErr] = useState<string | null>(null);
   const [drop, setDrop] = useState<DropState>("empty");
   const [qrErr, setQrErr] = useState<string | null>(null);
+  const [qrData, setQrData] = useState<string | null>(null);
+  const [making, setMaking] = useState(false);
   const [steps, setSteps] = useState<Step[]>(STEP_LABELS.map((label) => ({ label, status: "idle" })));
   const [startedAt, setStartedAt] = useState<number | null>(null);
   const [failure, setFailure] = useState<ProofError["kind"] | null>(null);
@@ -132,7 +134,7 @@ export default function PassPage() {
   const onFile = async (f: File) => {
     setQrErr(null);
     try {
-      await readTestQr(f);
+      setQrData(await readTestQr(f));
       setDrop("sealed");
     } catch {
       setDrop("invalid");
@@ -140,13 +142,28 @@ export default function PassPage() {
     }
   };
 
+  // No test QR? Make one here: Anon Aadhaar's public test key signs a fresh, fake one.
+  const onMake = async () => {
+    setQrErr(null);
+    setMaking(true);
+    try {
+      setQrData(await makeTestQr());
+      setDrop("sealed");
+    } catch {
+      setQrErr("We couldn't make a test QR here. Try again.");
+    } finally {
+      setMaking(false);
+    }
+  };
+
   const run = async () => {
+    if (!qrData) return;
     setFailure(null);
     setStartedAt(Date.now());
     setSteps(STEP_LABELS.map((label) => ({ label, status: "idle" })));
     const idx = { keys: 0, proof: 1, send: 2 } as const;
     try {
-      await proveRegistration((e: ProofEvent) =>
+      await proveRegistration(qrData, (e: ProofEvent) =>
         setSteps((s) =>
           s.map((st, i) =>
             i < idx[e.step]
@@ -225,7 +242,14 @@ export default function PassPage() {
           <li aria-disabled={!signedIn || undefined} style={{ opacity: signedIn ? 1 : 0.5 }}>
             <StepHead n={2} title="Your test QR" done={qrOk} active={signedIn && !qrOk} />
             {signedIn && (
-              <EnvelopeDropzone state={drop} onFile={onFile} helper="Test QR only · devnet · nothing real" error={qrErr} width="min(360px, 100%)" />
+              <div style={{ display: "flex", flexDirection: "column", gap: 12, alignItems: "flex-start" }}>
+                <EnvelopeDropzone state={drop} onFile={onFile} helper="Test QR only · devnet · nothing real" error={qrErr} width="min(360px, 100%)" />
+                {!qrOk && (
+                  <Button variant="ghost" size="S" onClick={onMake} disabled={making}>
+                    {making ? "Making a test QR…" : "No test QR? Make one on this device"}
+                  </Button>
+                )}
+              </div>
             )}
           </li>
           <li aria-disabled={!qrOk || undefined} style={{ opacity: qrOk ? 1 : 0.5 }}>

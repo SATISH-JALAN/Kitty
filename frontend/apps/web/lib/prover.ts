@@ -1,10 +1,10 @@
 "use client";
 /**
- * Prover bridge (architecture 8.2 `zk`). The real prover is a Web Worker in packages/zk
- * (snarkjs / @anon-aadhaar/core) reporting progress; until it lands this devnet mock
- * emits the same events with measured-looking timings, so the UI and its states are
- * final. Swap `runMock` for the worker call — nothing else changes.
+ * Prover bridge (architecture 8.2 `zk`). Live: the Anon Aadhaar proof runs in the prover Web
+ * Worker (packages/zk) and the pass is registered through the fee relay. Sample mode (no API)
+ * keeps the original timed mock so the experience can be reviewed without a backend.
  */
+import { API } from "@/lib/kitty/api";
 
 export type ProofStep = "keys" | "proof" | "send";
 
@@ -18,7 +18,7 @@ export interface ProofEvent {
 export class ProofError extends Error {
   constructor(
     public kind: "interrupted" | "registered" | "unreadable",
-    message = kind,
+    message: string = kind,
   ) {
     super(message);
   }
@@ -38,27 +38,54 @@ function demo(): string | null {
   return new URLSearchParams(window.location.search).get("demo");
 }
 
-/** Read the test QR image: only checks that it's an image we can decode. */
-export async function readTestQr(file: File): Promise<void> {
+/** Read the test QR image and return its data (a long decimal number). */
+export async function readTestQr(file: File): Promise<string> {
   if (!file.type.startsWith("image/")) throw new ProofError("unreadable");
-  const url = URL.createObjectURL(file);
-  try {
-    await new Promise<void>((res, rej) => {
-      const img = new Image();
-      img.onload = () => (img.width < 80 ? rej(new ProofError("unreadable")) : res());
-      img.onerror = () => rej(new ProofError("unreadable"));
-      img.src = url;
-    });
-  } finally {
-    URL.revokeObjectURL(url);
-  }
+  const bitmap = await createImageBitmap(file).catch(() => {
+    throw new ProofError("unreadable");
+  });
+  if (bitmap.width < 80) throw new ProofError("unreadable");
+  const canvas = new OffscreenCanvas(bitmap.width, bitmap.height);
+  const ctx = canvas.getContext("2d")!;
+  ctx.drawImage(bitmap, 0, 0);
+  const img = ctx.getImageData(0, 0, bitmap.width, bitmap.height);
+  const { default: jsQR } = await import("jsqr");
+  const code = jsQR(img.data, img.width, img.height);
+  if (!API) return code?.data ?? "sample";
+  if (!code || !/^\d{100,}$/.test(code.data.trim())) throw new ProofError("unreadable");
+  return code.data.trim();
 }
 
-/** Guest Pass registration: fetch keys (600 MB, once) → build proof → send. */
-export async function proveRegistration(onEvent: (e: ProofEvent) => void, signal?: AbortSignal): Promise<{ signature: string }> {
+/** Make a fresh test QR on this device (Anon Aadhaar's public test key; devnet only). */
+export async function makeTestQr(): Promise<string> {
+  const { makeTestQr } = await import("@/lib/kitty/actions");
+  return makeTestQr();
+}
+
+/** Guest Pass registration: fetch keys (once) → build proof → send. */
+export async function proveRegistration(qrData: string, onEvent: (e: ProofEvent) => void, signal?: AbortSignal): Promise<{ signature: string }> {
+  if (API) {
+    const { register } = await import("@/lib/kitty/actions");
+    const { TxError } = await import("@/lib/kitty/tx");
+    try {
+      return await register(qrData, (step, progress, detail) => {
+        if (signal?.aborted) throw new ProofError("interrupted");
+        onEvent({ step, progress, detail });
+      });
+    } catch (e) {
+      console.error("[kitty] Guest Pass failed:", e);
+      if (e instanceof ProofError) throw e;
+      if (e instanceof TxError && (e.code === "AlreadyInUse" || /already in use/i.test(e.message))) throw new ProofError("registered");
+      if (/unreadable/.test((e as Error).message)) throw new ProofError("unreadable");
+      throw new ProofError("interrupted", (e as Error).message);
+    }
+  }
+  return mockRegistration(onEvent, signal);
+}
+
+async function mockRegistration(onEvent: (e: ProofEvent) => void, signal?: AbortSignal): Promise<{ signature: string }> {
   const d = demo();
-  // Keys: chunked download with real byte counts.
-  const total = 600;
+  const total = 282;
   const cached = (() => {
     try {
       return localStorage.getItem("kitty:keys") === "1";
@@ -66,7 +93,7 @@ export async function proveRegistration(onEvent: (e: ProofEvent) => void, signal
       return false;
     }
   })();
-  for (let mb = cached ? total : 0; mb <= total; mb += 24) {
+  for (let mb = cached ? total : 0; mb <= total; mb += 12) {
     onEvent({ step: "keys", progress: mb / total, detail: `Downloading keys · ${Math.min(mb, total)} / ${total} MB · once only` });
     await sleep(110, signal);
   }
@@ -76,7 +103,6 @@ export async function proveRegistration(onEvent: (e: ProofEvent) => void, signal
     /* next visit downloads again */
   }
   onEvent({ step: "keys", progress: 1 });
-  // Proof: the circuit can't report progress; the UI shows elapsed time instead.
   onEvent({ step: "proof", progress: null });
   await sleep(5200, signal);
   if (d === "prooffail") throw new ProofError("interrupted");

@@ -10,6 +10,8 @@ import { earliestSeat, formatMoney, formatPercentBps, formatWhen, perNightDue, T
 import { gsap } from "@kitty/ui/motion/gsap";
 import { prefersReducedMotion } from "@kitty/ui/motion/reduced";
 import { Button, TextLink } from "@kitty/ui/components/Button";
+import { Field } from "@kitty/ui/components/Field";
+import { Sheet } from "@kitty/ui/components/Sheet";
 import { CopyButton } from "@kitty/ui/components/CopyButton";
 import { Money } from "@kitty/ui/components/Money";
 import { Tag } from "@kitty/ui/components/Tag";
@@ -160,6 +162,22 @@ export default function PartyPage() {
   const table = useRef<HTMLDivElement>(null);
   const [origin, setOrigin] = useState("");
   useEffect(() => setOrigin(window.location.origin), []);
+  const [backing, setBacking] = useState(false);
+  const [backIdx, setBackIdx] = useState<number | null>(null);
+  const [backAmt, setBackAmt] = useState("10");
+  const [backBusy, setBackBusy] = useState(false);
+  const [backErr, setBackErr] = useState<string | null>(null);
+  const [finishing, setFinishing] = useState(false);
+  const [finishErr, setFinishErr] = useState<string | null>(null);
+  // The host's invite link is re-derived from their seed (sample: a demo key).
+  const [inviteUrl, setInviteUrl] = useState<string | null>(null);
+  useEffect(() => {
+    if (IS_SAMPLE) {
+      setInviteUrl(`${window.location.origin}/invite/${id}#k=demo`);
+      return;
+    }
+    void import("@/lib/kitty/actions").then(({ hostInviteLink }) => setInviteUrl(hostInviteLink(BigInt(id))));
+  }, [id, p?.me?.host]);
 
   // Switching tabs slides the panel out from behind the tab edge.
   useEffect(() => {
@@ -192,6 +210,19 @@ export default function PartyPage() {
 
   const kitty = p.chipIn * p.guests;
   const forming = p.status === "forming";
+  const finish = async () => {
+    setFinishing(true);
+    setFinishErr(null);
+    try {
+      const { completeParty } = await import("@/lib/kitty/actions");
+      await completeParty(BigInt(p.id));
+      toast({ text: "Farewell page added to your Diary", icon: "done" });
+    } catch (e) {
+      setFinishErr((e as Error).message?.length < 140 ? (e as Error).message : copy.error.proof);
+    } finally {
+      setFinishing(false);
+    }
+  };
   const finished = p.status === "finished";
   const tonightTaker = p.nights.find((n) => n.state === "tonight");
   const seatsShown = forming ? [...p.seats, ...Array.from({ length: p.guests - p.seats.length }, (_, i) => ({ idx: p.seats.length + i, name: "", colour: 9, animal: 0, tier: 0 as const, tonight: "due" as const }))] : p.seats;
@@ -233,6 +264,24 @@ export default function PartyPage() {
         <div className="farewell-banner foil-frame" data-enter>
           <span className="type-h2">Farewell night!</span>
           <span className="type-body">Everyone who paid in full has a Farewell page in their Diary.</span>
+          {p.me?.farewellPending && (
+            <Button busy={finishing} onClick={finish}>
+              Add the Farewell page to my Diary
+            </Button>
+          )}
+          {finishErr && (
+            <span className="type-small" role="alert">
+              {finishErr}
+            </span>
+          )}
+        </div>
+      )}
+      {!IS_SAMPLE && forming && p.me?.host && p.me.idx < 0 && inviteUrl && (
+        <div className="forming-note" data-enter style={{ marginBottom: 24 }}>
+          <p className="type-body">You host this party. RSVP like every guest to take your seat.</p>
+          <Button href={inviteUrl.replace(/^https?:\/\/[^/]+/, "")} iconEnd="arrow">
+            RSVP to your party
+          </Button>
         </div>
       )}
 
@@ -245,12 +294,12 @@ export default function PartyPage() {
               guests={seatsShown.map((s) => ({ name: s.name || "Empty seat", colour: s.colour, animal: s.animal }))}
               tradition={p.tradition}
               world="paper"
-              you={p.me?.idx}
+              you={p.me && p.me.idx >= 0 ? p.me.idx : undefined}
               litSeat={p.status === "active" && tonightTaker ? (p.mode === "seating" ? p.night - 1 : null) : null}
               seatOrder={p.mode === "seating"}
               onSeat={forming ? undefined : (i) => setSeat(i)}
             >
-              {p.me && (
+              {p.me && p.me.idx >= 0 && (
                 <span
                   className="you-tag"
                   style={{ position: "absolute", left: seatPoint(p.me.idx, p.guests, D, 0.24).x, top: seatPoint(p.me.idx, p.guests, D, 0.24).y, translate: "-50% -50%" }}
@@ -278,11 +327,61 @@ export default function PartyPage() {
                 <span className="type-small" style={{ color: "var(--ink-soft)" }}>
                   {copy.cta.copyInvite}
                 </span>
-                <CopyButton value={`${origin}/invite/${p.id}#k=demo`} label={copy.cta.copyInvite} onCopied={() => toast({ text: copy.toast.copied, icon: "copy" })} />
+                <CopyButton value={inviteUrl ?? `${origin}/invite/${p.id}`} label={copy.cta.copyInvite} onCopied={() => toast({ text: copy.toast.copied, icon: "copy" })} />
               </span>
             </div>
           )}
         </section>
+
+        {!IS_SAMPLE && !finished && p.seats.some((s) => !s.tookNight && s.idx !== p.me?.idx) && (
+          <div className="forming-note" data-enter style={{ gridColumn: "1 / -1" }}>
+            <p className="type-body">Plus-ones: stake test kUSD behind a guest before they take the kitty. It lowers their keepsafe, and comes back after the party unless a missed chip-in needed it.</p>
+            <Button variant="ghost" size="S" onClick={() => setBacking(true)}>
+              Back a guest
+            </Button>
+          </div>
+        )}
+        <Sheet open={backing} onClose={() => setBacking(false)} title="Back a guest">
+          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            <div role="radiogroup" aria-label="Guest" style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+              {p.seats
+                .filter((s) => !s.tookNight && s.idx !== p.me?.idx)
+                .map((s) => (
+                  <Button key={s.idx} size="S" variant={backIdx === s.idx ? "primary" : "ghost"} onClick={() => setBackIdx(s.idx)} aria-pressed={backIdx === s.idx}>
+                    {s.name}
+                  </Button>
+                ))}
+            </div>
+            <Field label="Stake (test kUSD)" type="number" min={1} value={backAmt} onChange={(e) => setBackAmt(e.target.value)} />
+            <Button
+              variant="money"
+              busy={backBusy}
+              disabled={backIdx == null || !(+backAmt > 0)}
+              onClick={async () => {
+                if (backIdx == null) return;
+                setBackBusy(true);
+                setBackErr(null);
+                try {
+                  const { vouchFor } = await import("@/lib/kitty/actions");
+                  await vouchFor(BigInt(p.id), backIdx, BigInt(Math.round(+backAmt * 1_000_000)));
+                  setBacking(false);
+                  toast({ text: "Plus-one added", icon: "done" });
+                } catch (e) {
+                  setBackErr((e as Error).message?.length < 140 ? (e as Error).message : "Couldn't add the plus-one. Try again.");
+                } finally {
+                  setBackBusy(false);
+                }
+              }}
+            >
+              Back them with {formatMoney(Math.round(+backAmt * 1_000_000) || 0)}
+            </Button>
+            {backErr && (
+              <p className="type-small" role="alert">
+                {backErr}
+              </p>
+            )}
+          </div>
+        </Sheet>
 
         <section className="party-tabs" data-enter>
           <div role="tablist" aria-label="Party details" className="folder-tabs">

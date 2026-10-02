@@ -15,6 +15,19 @@ export interface GuestSeat {
   /** Status for the current night. */
   tonight: "paid" | "due" | "grace" | "took";
   tookNight?: number;
+  /** Live chain fields (absent in sample data). */
+  tag?: string;
+  wallet?: string;
+  status?: number;
+  paidThrough?: number;
+  keepsafe?: string;
+  keepsafeTotal?: string;
+  debt?: string;
+  missedNights?: number;
+  ownPaid?: number;
+  lateCount?: number;
+  farewelled?: boolean;
+  graceDeadline?: string;
 }
 
 export interface NightRecord {
@@ -42,6 +55,15 @@ export interface Party {
   nights: NightRecord[];
   rsvps?: number;
   startsBy?: string;
+  /** Live chain fields (absent in sample data). */
+  address?: string;
+  cancelled?: boolean;
+  periodSecs?: number;
+  graceSecs?: number;
+  startsAt?: string;
+  formationDeadline?: string;
+  drawRound?: number;
+  drawWinner?: number;
   /** The device's view (private, from the Diary). */
   me?: {
     idx: number;
@@ -50,6 +72,12 @@ export interface Party {
     graceHoursLeft?: number;
     keepsafe?: { total: number; back: number };
     autopay: boolean;
+    /** Chain member status: 0 active, 1 grace, 2 on hold, 3 removed, 4 settled. */
+    status?: number;
+    host?: boolean;
+    /** Farewell happened; the COMPLETE proof is still to send. */
+    farewellPending?: boolean;
+    completed?: boolean;
   };
 }
 
@@ -60,7 +88,7 @@ export interface Me {
   partiesFinished: number;
   neverLate: number;
   lifetimeChippedIn: number;
-  onHold?: { amount: number; party: string };
+  onHold?: { amount: number; party: string; partyId?: string };
 }
 
 export interface DrawState {
@@ -75,6 +103,7 @@ export interface HouseFlow {
   id: string;
   at: string;
   kind: "fee-in" | "cover-out" | "settle-in";
+  party?: number;
   amount: number;
   balanceAfter: number;
   sig: string;

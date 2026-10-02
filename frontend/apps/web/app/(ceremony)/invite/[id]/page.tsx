@@ -23,7 +23,9 @@ import { Mask } from "@kitty/ui/generators/mask";
 import { Art } from "@/components/Art";
 import { useIrisEntry } from "@/components/chrome/Transition";
 import { copy, t } from "@/copy/en";
-import { useMe, useParty } from "@/data/api";
+import { IS_SAMPLE, useMe, useParty } from "@/data/api";
+import { useSession } from "@/data/session";
+import { useQueryClient } from "@tanstack/react-query";
 import type { Party } from "@/data/types";
 
 const PERIOD: Record<Party["period"], string> = { weekly: "weekly", biweekly: "every 2 weeks", monthly: "monthly", demo: "every 3 minutes (demo)" };
@@ -64,6 +66,9 @@ export default function InvitePage() {
   const [steps, setSteps] = useState<Step[]>(RSVP_STEPS.map((label) => ({ label, status: "idle" })));
   const [startedAt, setStartedAt] = useState<number | null>(null);
   const [done, setDone] = useState(false);
+  const [failed, setFailed] = useState<string | null>(null);
+  const hasPass = useSession((s) => s.hasPass);
+  const qc = useQueryClient();
   useIrisEntry(root);
 
   const tier = me.data?.tier ?? 0;
@@ -106,6 +111,25 @@ export default function InvitePage() {
 
   const runRsvp = async () => {
     setStartedAt(Date.now());
+    setFailed(null);
+    if (!IS_SAMPLE) {
+      setSteps(RSVP_STEPS.map((label) => ({ label, status: "idle" })));
+      try {
+        const k = new URLSearchParams(window.location.hash.slice(1)).get("k");
+        if (!k) throw new Error("This link is missing its invite key. Ask the host for the full link.");
+        const { rsvp: send } = await import("@/lib/kitty/actions");
+        const { decodeInviteSecret } = await import("@kitty/chain");
+        await send(BigInt(id), decodeInviteSecret(k), (i, status, detail) =>
+          setSteps((s) => s.map((st, n) => (n === i ? { ...st, status, detail, progress: status === "done" ? 1 : null } : st))),
+        );
+        await qc.invalidateQueries({ queryKey: ["parties"] });
+        setDone(true);
+      } catch (e) {
+        setFailed(rsvpError(e));
+        setSteps((s) => s.map((st) => (st.status === "working" ? { ...st, status: "error" } : st)));
+      }
+      return;
+    }
     for (let i = 0; i < RSVP_STEPS.length; i++) {
       setSteps((s) => s.map((st, k) => (k === i ? { ...st, status: "working", progress: i === 0 ? null : 0.5 } : st)));
       await new Promise((r) => setTimeout(r, i === 0 ? 4200 : 1100));
@@ -251,6 +275,16 @@ export default function InvitePage() {
               <p className="type-body" role="alert">
                 This party is full. Ask the host about the standby list.
               </p>
+            ) : party.me && party.me.idx >= 0 ? (
+              <div style={{ display: "flex", flexDirection: "column", gap: 12, alignItems: "flex-start" }}>
+                <p className="type-body">You&rsquo;re on the guest list as <em className="type-word">{party.seats[party.me.idx]?.name}</em>.</p>
+                <Button href={`/p/${party.id}`}>{copy.cta.goParty}</Button>
+              </div>
+            ) : !IS_SAMPLE && !hasPass ? (
+              <div style={{ display: "flex", flexDirection: "column", gap: 12, alignItems: "flex-start" }}>
+                <p className="type-body">You need a Guest Pass to RSVP. It takes a minute, once.</p>
+                <Button href="/pass" iconEnd="arrow">{copy.cta.pass}</Button>
+              </div>
             ) : me.data?.onHold ? (
               <div role="alert" style={{ display: "flex", flexDirection: "column", gap: 12, alignItems: "flex-start" }}>
                 <p className="type-body">{copy.status.onHold}</p>
@@ -278,7 +312,7 @@ export default function InvitePage() {
                 {t(copy.cta.rsvp, { amount: formatMoney(due.total, { cents: "always" }) })}
               </Button>
             ) : (
-              <LanternStepper steps={steps} startedAt={startedAt} label="RSVP progress" />
+              <LanternStepper steps={steps} startedAt={startedAt} label="RSVP progress" onRetry={failed ? runRsvp : undefined} errorText={failed ?? undefined} />
             )}
           </div>
         ) : (
@@ -296,4 +330,18 @@ export default function InvitePage() {
       </Sheet>
     </main>
   );
+}
+
+/** Plain words for what went wrong (copy rules: no blame, say what to do). */
+function rsvpError(e: unknown): string {
+  const msg = (e as Error)?.message ?? "";
+  const code = (e as { code?: string | null })?.code ?? "";
+  if (/invite key|BadInvite/i.test(msg + code)) return "This invite link doesn't match the party. Ask the host to send it again.";
+  if (/AlreadyJoined/.test(code)) return "You're already on this party's guest list.";
+  if (/PartyFull|NotForming/.test(code)) return "This party filled up a moment ago.";
+  if (/FormationClosed/.test(code)) return "The RSVP window for this party has closed.";
+  if (/UnknownRoot|BadClock/.test(code)) return "The party list moved on while your proof was being made. Try again.";
+  if (/four parties/.test(msg)) return "You're already at four parties. Finish one before joining another.";
+  if (/Assert Failed|Error in template/.test(msg)) return "Your Diary can't vouch for you yet: a chip-in elsewhere is missing, or this party is above your kitty limit.";
+  return msg && msg.length < 140 ? msg : copy.error.proof;
 }

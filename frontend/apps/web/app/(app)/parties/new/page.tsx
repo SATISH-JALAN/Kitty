@@ -26,6 +26,7 @@ import { Art } from "@/components/Art";
 import { PageHeader } from "@/components/chrome/PageHeader";
 import { copy } from "@/copy/en";
 import type { OrderMode, Period } from "@/data/types";
+import { IS_SAMPLE } from "@/data/api";
 
 const VIGNETTE: Record<TraditionKey, "V-1" | "V-2" | "V-3" | "V-4" | "V-5" | "V-6" | "V-7"> = { kitty: "V-1", tanda: "V-2", susu: "V-3", paluwagan: "V-4", arisan: "V-5", chama: "V-6", ajo: "V-7" };
 const PERIODS: { value: Period; label: string }[] = [
@@ -166,12 +167,35 @@ export default function NewPartyPage() {
     gsap.fromTo(body, { rotationX: 90, transformOrigin: "50% 0%", transformPerspective: 900 }, { rotationX: 0, duration: 0.42, ease: "fold" });
   }, [step]);
 
-  const create = () => {
+  const [createErr, setCreateErr] = useState<string | null>(null);
+  const create = async () => {
     setBusy(true);
-    setTimeout(() => {
+    setCreateErr(null);
+    if (IS_SAMPLE) {
+      setTimeout(() => {
+        setBusy(false);
+        setCreated(`${window.location.origin}/invite/susu#k=${Math.random().toString(36).slice(2, 12)}`);
+      }, 2200);
+      return;
+    }
+    try {
+      const { chainNow, createParty } = await import("@/lib/kitty/actions");
+      const DAY = 86_400;
+      const periodSecs = { weekly: 7 * DAY, biweekly: 14 * DAY, monthly: 30 * DAY, demo: 180 }[period];
+      const now = await chainNow(); // the schedule runs on the chain's clock
+      // Demo parties: 15 minutes to fill, then a night every 3 minutes with 2 grace minutes.
+      const formationDeadline = now + (period === "demo" ? 15 * 60 : 7 * DAY);
+      const r = await createParty({
+        title, word: shownWord, tradition: trad, chipIn: BigInt(chipIn), guests, periodSecs,
+        graceSecs: period === "demo" ? 120 : 3 * DAY, startTs: formationDeadline, formationDeadline,
+        mode: mode === "seating" ? "seating" : "draw", hostFeeBps: hostBps,
+      });
+      setCreated(r.link);
+    } catch (e) {
+      setCreateErr((e as Error).message?.length < 160 ? (e as Error).message : "We couldn't create the party. Try again.");
+    } finally {
       setBusy(false);
-      setCreated(`${window.location.origin}/invite/susu#k=${Math.random().toString(36).slice(2, 12)}`);
-    }, 2200);
+    }
   };
 
   useEffect(() => {
@@ -260,10 +284,10 @@ export default function NewPartyPage() {
               [
                 { v: "draw", title: "The Draw", icon: "bowl", body: "A fair draw each night, with verifiable randomness." },
                 { v: "seating", title: "Seating plan", icon: "invite", body: "An order everyone accepts before the first night." },
-                { v: "bid", title: "Bid night", icon: "envelope", body: "Sealed bids; the discount is shared back.", tag: "Family guests only" },
+                { v: "bid", title: "Bid night", icon: "envelope", body: "Sealed bids; the discount is shared back.", tag: "After v1" },
               ] as const
             ).map((o) => (
-              <button key={o.v} type="button" role="radio" aria-checked={mode === o.v} className="order-card" onClick={() => setMode(o.v)} data-focus-ring="">
+              <button key={o.v} type="button" role="radio" aria-checked={mode === o.v} className="order-card" onClick={() => setMode(o.v)} data-focus-ring="" disabled={o.v === "bid"} aria-disabled={o.v === "bid" || undefined} style={o.v === "bid" ? { opacity: 0.55, cursor: "not-allowed" } : undefined}>
                 <Icon name={o.icon} size={32} />
                 <span className="type-h3">{o.title}</span>
                 <span className="type-small" style={{ color: "var(--ink-soft)" }}>
@@ -375,9 +399,16 @@ export default function NewPartyPage() {
                           {copy.cta.continue}
                         </Button>
                       ) : (
-                        <Button size="L" busy={busy} onClick={create}>
-                          {copy.cta.createParty}
-                        </Button>
+                        <>
+                          <Button size="L" busy={busy} onClick={create}>
+                            {copy.cta.createParty}
+                          </Button>
+                          {createErr && (
+                            <p className="type-small" role="alert" style={{ color: "var(--saffron)" }}>
+                              {createErr}
+                            </p>
+                          )}
+                        </>
                       )}
                     </div>
                   </div>
@@ -429,6 +460,11 @@ export default function NewPartyPage() {
               <div ref={wordmarkBox} hidden aria-hidden="true">
                 <Wordmark height={64} ink="#F6EEDF" />
               </div>
+              {!IS_SAMPLE && (
+                <Button href={created.replace(/^https?:\/\/[^/]+/, "")} iconEnd="arrow">
+                  RSVP to your party
+                </Button>
+              )}
               <Button href="/parties" variant="ghost">
                 Go to your parties
               </Button>

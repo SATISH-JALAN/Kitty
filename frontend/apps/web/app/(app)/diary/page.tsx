@@ -53,8 +53,25 @@ export default function DiaryPageScreen() {
 
   const tier = me.data?.tier ?? 0;
   const lifetime = me.data?.lifetimeChippedIn ?? 0;
-  const limit = kittyLimit(lifetime, dollars(100));
-  const onHold = demo === "onhold" ? exampleParty().settleUp : null;
+  const limit = kittyLimit(lifetime, dollars(150));
+  const liveHold = !IS_SAMPLE ? me.data?.onHold : undefined;
+  const onHold = liveHold ? liveHold.amount : demo === "onhold" ? exampleParty().settleUp : null;
+  const [settling, setSettling] = useState(false);
+  const [settleErr, setSettleErr] = useState<string | null>(null);
+  const settle = async () => {
+    if (!liveHold?.partyId) return;
+    setSettling(true);
+    setSettleErr(null);
+    try {
+      const { settleUp } = await import("@/lib/kitty/actions");
+      await settleUp(BigInt(liveHold.partyId));
+      await parties.refetch();
+    } catch (e) {
+      setSettleErr((e as Error).message?.length < 140 ? (e as Error).message : copy.error.proof);
+    } finally {
+      setSettling(false);
+    }
+  };
   const empty = demo === "empty";
 
   const stamps = useMemo(() => {
@@ -226,11 +243,22 @@ export default function DiaryPageScreen() {
                 <span className="hold-clip" aria-hidden="true" />
                 <p className="type-h3">{copy.status.onHold}</p>
                 <p className="type-small" style={{ color: "var(--ink-soft)" }}>
-                  The House Fund covered {formatMoney(exampleParty().cover.fromHouse)} for you, plus a late fee for each missed night.
+                  {liveHold ? `At ${liveHold.party}, the House Fund covered for you. Settling up repays it, plus a late fee for each missed night.` : `The House Fund covered ${formatMoney(exampleParty().cover.fromHouse)} for you, plus a late fee for each missed night.`}
                 </p>
-                <Button variant="money" href="/diary?demo=">
-                  {t(copy.cta.settleUp, { amount: formatMoney(onHold, { cents: "always" }) })}
-                </Button>
+                {liveHold ? (
+                  <Button variant="money" busy={settling} onClick={settle}>
+                    {t(copy.cta.settleUp, { amount: formatMoney(onHold, { cents: "always" }) })}
+                  </Button>
+                ) : (
+                  <Button variant="money" href="/diary?demo=">
+                    {t(copy.cta.settleUp, { amount: formatMoney(onHold, { cents: "always" }) })}
+                  </Button>
+                )}
+                {settleErr && (
+                  <p className="type-small" role="alert">
+                    {settleErr}
+                  </p>
+                )}
               </div>
             )}
           </div>

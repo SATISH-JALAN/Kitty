@@ -10,9 +10,14 @@ import { Button } from "@kitty/ui/components/Button";
 import { toast } from "@kitty/ui/components/Toast";
 import { PageHeader } from "@/components/chrome/PageHeader";
 import { useSession } from "@/data/session";
+import { IS_SAMPLE } from "@/data/api";
+import { useDevice } from "@/lib/kitty/store";
 
 export default function SettingsPage() {
-  const { signOut } = useSession();
+  const { signOut, signIn, email } = useSession();
+  const backupAt = useDevice((d) => d.backup.at);
+  const backupState = useDevice((d) => d.backup.state);
+  const [faucetMsg, setFaucetMsg] = useState("");
   const [busy, setBusy] = useState<string | null>(null);
   const [sent, setSent] = useState(false);
   const slip = useRef<HTMLSpanElement>(null);
@@ -25,11 +30,52 @@ export default function SettingsPage() {
     }, ms);
   };
 
+  const dropSlip = () => {
+    setSent(true);
+    if (slip.current && !prefersReducedMotion()) gsap.fromTo(slip.current, { y: -40, rotation: -6, autoAlpha: 1 }, { y: 6, rotation: 0, autoAlpha: 0, duration: 0.7, ease: "fold" });
+  };
+  const live = async (key: string, fn: () => Promise<void>) => {
+    setBusy(key);
+    try {
+      await fn();
+    } catch (e) {
+      toast({ text: (e as Error).message?.length < 120 ? (e as Error).message : "Something went wrong. Try again." });
+    } finally {
+      setBusy(null);
+    }
+  };
   const faucet = () =>
-    run("faucet", 1600, () => {
-      setSent(true);
-      if (slip.current && !prefersReducedMotion()) gsap.fromTo(slip.current, { y: -40, rotation: -6, autoAlpha: 1 }, { y: 6, rotation: 0, autoAlpha: 0, duration: 0.7, ease: "fold" });
-    });
+    IS_SAMPLE
+      ? run("faucet", 1600, () => {
+          setFaucetMsg("Sent 100 test kUSD");
+          dropSlip();
+        })
+      : live("faucet", async () => {
+          const { faucet: drip } = await import("@/lib/kitty/actions");
+          await drip();
+          setFaucetMsg("Sent test kUSD and a little devnet SOL");
+          dropSlip();
+        });
+  const rederive = () =>
+    IS_SAMPLE || !email
+      ? run("keys", 1400, () => toast({ text: "Keys re-derived on this device." }))
+      : live("keys", async () => {
+          await signIn(email);
+          toast({ text: "Keys re-derived on this device." });
+        });
+  const restore = () =>
+    IS_SAMPLE
+      ? run("restore", 1800, () => toast({ text: "Diary restored from backup." }))
+      : live("restore", async () => {
+          const { restore: fromBackup } = await import("@/lib/kitty/device");
+          const ok = await fromBackup();
+          toast({ text: ok ? "Diary restored from backup." : "No backup yet for this sign-in." });
+        });
+  const ago = (iso: string | null) => {
+    if (!iso) return null;
+    const m = Math.round((Date.now() - Date.parse(iso)) / 60_000);
+    return m < 1 ? "just now" : m < 60 ? `${m} min ago` : `${Math.round(m / 60)} h ago`;
+  };
 
   return (
     <>
@@ -38,14 +84,23 @@ export default function SettingsPage() {
         <section id="recovery" className="card" data-enter>
           <h2 className="type-h2">Recovery</h2>
           <p className="type-body">Your keys are made from your sign-in. On a new device, sign in with the same email and Kitty re-derives them. Nothing secret ever leaves your device.</p>
-          <Button variant="ghost" busy={busy === "keys"} onClick={() => run("keys", 1400, () => toast({ text: "Keys re-derived on this device." }))}>
+          <Button variant="ghost" busy={busy === "keys"} onClick={rederive}>
             Re-derive my keys
           </Button>
         </section>
         <section className="card" data-enter>
           <h2 className="type-h2">Diary backup</h2>
-          <p className="type-body">Backed up · 2 min ago. The backup is encrypted with a key only your device can make.</p>
-          <Button variant="ghost" busy={busy === "restore"} onClick={() => run("restore", 1800, () => toast({ text: "Diary restored from backup." }))}>
+          <p className="type-body">
+            {IS_SAMPLE
+              ? "Backed up · 2 min ago."
+              : backupState === "error"
+                ? "The last backup didn’t go through; it retries on your next change."
+                : backupAt
+                  ? `Backed up · ${ago(backupAt)}.`
+                  : "Not backed up yet: it happens after your first change."}{" "}
+            The backup is encrypted with a key only your device can make.
+          </p>
+          <Button variant="ghost" busy={busy === "restore"} onClick={restore}>
             Restore from backup
           </Button>
         </section>
@@ -64,7 +119,7 @@ export default function SettingsPage() {
               </svg>
             </span>
             <span className="type-body" aria-live="polite">
-              {sent ? "Sent 100 test kUSD" : ""}
+              {sent ? faucetMsg : ""}
             </span>
           </div>
         </section>
