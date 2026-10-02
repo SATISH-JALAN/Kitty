@@ -1,0 +1,17 @@
+# Build context for backend/Dockerfile (repo root). Keep it small.
+**/node_modules
+**/.next
+**/.turbo
+**/.env
+**/.env.*
+.git
+backend/.data
+contracts
+docs
+frontend/review
+frontend/kitty visuals
+frontend/apps/web/public
+circuits/build
+circuits/ptau
+circuits/keys/*.zkey
+circuits/keys/*.wasm
