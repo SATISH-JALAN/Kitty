@@ -1,0 +1,18 @@
+# Vercel uploads from the repo root (the project's root directory is frontend/apps/web).
+# Only the frontend workspace is needed to build the app.
+/backend
+/contracts
+/circuits
+/docs
+/memory.md
+/render.yaml
+/.dockerignore
+**/node_modules
+**/.next
+**/.turbo
+**/.env
+**/.env.*
+frontend/review
+frontend/kitty visuals
+frontend/packages/ui/fonts/Boska-*
+frontend/packages/ui/fonts/Switzer-*

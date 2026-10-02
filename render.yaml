@@ -27,8 +27,9 @@ services:
         sync: false
       - key: APP_ORIGINS
         sync: false
+      # The action circuit's proving files are served by the web app (frontend/apps/web/public/zk).
       - key: ARTIFACTS_BASE_URL
-        sync: false
+        value: /zk
       - key: INDEXER_POLL_MS
         value: "4000"
       - key: BUTLER_TICK_MS
