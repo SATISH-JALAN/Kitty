@@ -1,0 +1,31 @@
+{
+  "name": "@kitty/zk",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "The Kitty data model (Poseidon leaves, tree, params hashes), witness builders, proof encoding and the prover worker",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./worker": "./src/worker.ts",
+    "./client": "./src/client.ts",
+    "./solana": "./src/solana.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@noble/hashes": "^2.4.0",
+    "circomlibjs": "0.1.7",
+    "comlink": "^4.4.2",
+    "idb-keyval": "^6.2.2",
+    "snarkjs": "0.7.6"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.4",
+    "typescript": "5.9.3",
+    "vitest": "^5.0.2"
+  }
+}
