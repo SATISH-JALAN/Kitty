@@ -5,3 +5,8 @@ onlyBuiltDependencies:
   - sharp
   - esbuild
   - "@tailwindcss/oxide"
+# Program tests run LiteSVM, which has no Windows binary: also install the Linux builds (run them in WSL).
+supportedArchitectures:
+  os: [current, linux]
+  cpu: [current, x64]
+  libc: [current, glibc]

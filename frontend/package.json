@@ -10,6 +10,7 @@
     "fonts": "node scripts/fetch-fonts.mjs",
     "art": "node scripts/art-pipeline.mjs",
     "grain": "node scripts/make-grain.mjs",
+    "zk": "node scripts/zk-artifacts.mjs",
     "contrast": "node scripts/contrast.mjs",
     "brand": "tsx scripts/brand.ts",
     "postinstall": "node scripts/fetch-fonts.mjs",

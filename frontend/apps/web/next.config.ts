@@ -5,7 +5,7 @@ const root = path.resolve(__dirname, "../..");
 
 const config: NextConfig = {
   reactStrictMode: true,
-  transpilePackages: ["@kitty/ui", "@kitty/sdk"],
+  transpilePackages: ["@kitty/ui", "@kitty/sdk", "@kitty/chain", "@kitty/zk", "@kitty/diary"],
   turbopack: { root },
   outputFileTracingRoot: root,
   images: { unoptimized: true },
