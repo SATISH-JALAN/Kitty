@@ -1,11 +1,34 @@
-# Kitty frontend: progress log
+# Kitty: progress log
 
-This is the running record of the frontend build: what's done, what's left, and what changed in each session. Update it at the end of every session.
+This is the running record of the build: what's done, what's left, and what changed in each session. Update it at the end of every session.
 
-- **Spec:** `docs/FRONTEND_BRIEF.md` ("The Paper Masquerade")
+- **Spec:** `docs/FRONTEND_BRIEF.md` ("The Paper Masquerade"), `docs/architecture.md`, `docs/product.md`
 - **Decisions, tuned values, per-act storyboards, review log:** `docs/STORYBOARD.md`
-- **Deadline:** Oct 12, 2026 (P0 Oct 4 · P1 Oct 8 · P2 Oct 10 · polish Oct 11)
-- **Backend:** not built yet. It's next. The frontend runs on labelled devnet sample data until then.
+- **Full-build plan (Oct 2):** `~/.claude/plans/i-m-putting-u-abstract-pinwheel.md`
+- **Deadline:** Oct 12, 2026
+- **Commits:** none until the owner says so (owner decision, Oct 2). Work is uncommitted in the tree, except `23845d6` (circuits).
+
+---
+
+## Full build: status (Oct 2, 2026, session 7)
+
+| Piece | Where | State |
+| --- | --- | --- |
+| Action circuit (JOIN / COMPLETE / HISTORY, 48,248 constraints, 8 public signals) | `circuits/` | ✅ 20 witness tests, dev setup on the PSE ptau, JOIN proof 2.4 s in Node |
+| Anon Aadhaar (official v2 artifacts, test mode) | `frontend/packages/zk/src/aadhaar.ts` | ✅ browser port of generateArgs (byte-equal to @anon-aadhaar/core), on-device test QRs (unique nullifiers, witness-checked against the official circuit), proof ~60 s single-threaded |
+| Solana program (Anchor 1.2, 21 instructions) | `contracts/` | ✅ 8 Rust unit/parity tests; ⏳ not deployed (needs ~5 SOL on `2Qv2am…pCi5`) |
+| End-to-end program tests (LiteSVM + real proofs) | `frontend/packages/chain/test` | ✅ 26/26: Guest Pass, RSVP (bad invite, front-run refused), 4 Draw nights, House seat, waterfall 65/10/25, settle up, Farewell, COMPLETE, Show a page, vault ends at 0, Seating plan with an unpaid guest of the night. Run in WSL (no Windows LiteSVM binary): `scratchpad chaintest.sh` pattern = `node node_modules/vitest/vitest.mjs run` from WSL |
+| Typed client (Codama), PDAs, invite signatures, event decoding, chain→screen view | `frontend/packages/chain` | ✅ |
+| Data model, tree, witnesses, proof encoding, prover Web Worker | `frontend/packages/zk` | ✅ 5 tests |
+| Identity derivation + encrypted Diary | `frontend/packages/diary` | ✅ 3 tests |
+| Backend: indexer, API, relay (replaces Kora), faucet, Butler | `backend/` | ✅ 16 tests; run live against a local validator Oct 2 (relay, faucet, indexer, Butler through a whole party) |
+| App wiring | `frontend/apps/web/lib/kitty/*`, `data/*`, screens | ✅ live rehearsal passed Oct 2 (`apps/web/scripts/e2e-live.mjs`: 4 Guest Passes, host a party, 4 RSVPs → party active 4/4, 8.5 min, local validator + backend + `next dev`) |
+| Privy login | `frontend/apps/web/components/PrivyBridge.tsx` | ✅ code + typecheck; ⏳ needs the owner's Privy App ID to test |
+| Deploy (Vercel + Railway + Postgres) | — | ⏳ needs the owner's Railway login + Privy App ID |
+
+Measured on LiteSVM (opt-level z build, 451 KB): rsvp 205K CU / 1,173 B, register 190K, update_note 188K, verify_history 156K, collect 66K, settle 36K.
+
+Key implementation decisions (beyond the plan): grace is per party and folded into each note slot as `dueStart = start + grace`; the Draw's eligible guests must have chipped in tonight; a removed guest's seat is held by the House Fund and the guest is refunded minus 5% when that seat takes the kitty; settled-up and removed guests get a "release" completion (frees the slot, doesn't raise the tier); `emit!` events (not `emit_cpi!`); no lookup table needed.
 
 ---
 
@@ -124,6 +147,15 @@ On Git Bash, prefix commands that take a route (`/pass`, `/p/x`) with `MSYS_NO_P
 ---
 
 ## Changelog
+
+### Oct 2, 2026, session 8 (live rehearsal, after a crash)
+- **Guest Pass out of memory:** the 282 MB Anon Aadhaar key is now inflated straight into 4 MB snarkjs "bigMem" pages, and its 10 gzipped chunks are cached as one IndexedDB entry each (Chromium returned a single 282 MB value as null) (`frontend/packages/zk/src/artifacts.ts`). The pass proves + registers in ~75–140 s with < 3 GB RAM free.
+- **RSVP failed with BadClock:** proofs took `now` from the device clock, but the program checks it against the chain's Clock (±120 s). New `GET /v1/clock` (the backend reads the Clock sysvar); `lib/kitty/actions.ts` uses it and falls back to the device clock. Found because the local validator, restarted from its old ledger, ran 4.7 h behind.
+- **Privy:** `components/PrivyBridge.tsx`, lazy-mounted from `QueryProvider` only when `NEXT_PUBLIC_PRIVY_APP_ID` is set. Email login with the address prefilled → embedded Solana wallet → silent signMessage("kitty-identity-v1") → `unlockWith`. Installed `@privy-io/react-auth` + `@solana-program/{memo,system,token}` (its /solana entry imports them).
+- **Local stack:** restart the validator **without** `--reset` so the chain and the backend's PGlite stay in sync.
+- **Party schedule + Butler on the chain's clock:** the wizard's start/formation times come from `chainNow()` (was the device clock); the Butler plans and the API's party views use `chainClock()` (Clock sysvar, `backend/src/chain.ts`). Butler crank failures are now `warn` with the program's reason (were silent `debug`).
+- **Program fix (Seating plan deadlock):** grace only started inside `settle`, and `settle` refused while tonight's seat-holder was unpaid, so a seat-holder who couldn't pay froze the party forever. Now, once due + the party's grace hours have passed, `settle` ends that guest's grace and returns; `mark_default` removes them and the next `settle` gives the seat to the House Fund (`settle.rs`). The Butler's planner waits out the grace hours instead of retrying (`plan.ts`). New LiteSVM scenario "Seating plan: tonight's guest can't pay" (26/26), new planner test (backend 16/16), Rust 8/8. Upgraded on the local validator only.
+- **Butler verified live (party 4):** 4 nights unattended: auto-pay collects, seat payouts, two guests out of funds → fronted/grace → removed → House Fund took both seats, 4 Farewells, vault $0, no errors.
 
 ### Oct 2, 2026, session 6 (repo layout)
 - Rewrote `.gitignore` and split the history into 65 commits.
