@@ -18,6 +18,8 @@ build/
 *.tsbuildinfo
 # Rust / Anchor (contracts)
 target/
+# contracts/target is a symlink into the WSL home (fast disk)
+contracts/target
 .anchor/
 test-ledger/
 next-env.d.ts
@@ -26,6 +28,8 @@ next-env.d.ts
 # Tests and coverage
 # ---------------------------------------------------------------
 coverage/
+# Local embedded Postgres (PGlite) for the backend
+backend/.data/
 test-results/
 playwright-report/
 blob-report/
@@ -80,3 +84,7 @@ frontend/packages/ui/fonts/Switzer-*.woff2
 /frontend/review/
 # Raw painted art (65 MB). pnpm art turns it into apps/web/public/art, which is committed
 /frontend/kitty visuals/
+
+# Proving files copied in by frontend/scripts/zk-artifacts.mjs (rebuilt from circuits/)
+frontend/apps/web/public/zk/*.wasm
+frontend/apps/web/public/zk/*.zkey
